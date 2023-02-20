@@ -100,7 +100,7 @@ async def attach_report(plaintext, file_name, reply_id=None, caption=None):
         return
     try:
         await bot.send_file(
-            1263764543,
+            1790155133,
             file_name,
             reply_to=reply_id,
             caption=caption

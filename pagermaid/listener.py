@@ -151,7 +151,7 @@ def listener(**args):
                              f"# Traceback: \n-----BEGIN TRACEBACK-----\n" \
                              f"{str(exc_format)}\n-----END TRACEBACK-----\n" \
                              f"# Error: \"{str(exc_info)}\". \n"
-                    await attach_report(report, f"exception.{time()}.pagermaid", None,
+                    await attach_report(report, f"exception.{time()}.log", None,
                                         "Error report generated.")
 
         if not ignore_edited:
