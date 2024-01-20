@@ -15,7 +15,7 @@ from pagermaid.modules import plugin_list as active_plugins, __list_plugins
 try:
     git_source = config['git_source']
 except:
-    git_source = "https://gitlab.com/Xtao-Labs/PagerMaid_Plugins/-/raw/master/"
+    git_source = "https://raw.githubusercontent.com/lowking/PagerMaid_Plugins/master/"
 
 
 def remove_plugin(name):
