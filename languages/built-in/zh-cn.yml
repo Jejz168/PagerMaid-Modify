@@ -135,11 +135,14 @@ parseqr_log: 已解析一张带有 QR 码的消息，内容：
 
 # backup
 ## backup
-backup_des: 备份数据文件到本地以及日志频道，支持数据库的全量备份，安全可靠。
+backup_scheduler: 定期备份任务
+backup_des: 备份数据文件到本地以及日志频道或者指定会话，支持数据库的全量备份，安全可靠。
 backup_process: 备份中，请耐心等待备份程序完成...
 backup_success_channel: 数据文件备份完成并已打包发送到 Log 频道！
 backup_uploading: 正在上传备份文件...
 backup_success: 数据文件备份完成！
+backup_chatid_suc: 设置备份chatId成功
+backup_chatid_error: 设置备份chatId失败，请输入正确的chatId！
 ## recovery
 recovery_des: 从本地备份或者所回复的备份文件中恢复数据，支持数据库的全量恢复，方便快速。
 recovery_file_error: 未知的文件，可能并不是通过 PagerMaid 所备份的文件类型。

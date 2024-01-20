@@ -128,11 +128,14 @@ parseqr_e_noqr: Target is not a QR Code.
 parseqr_log: Parsed QR Code with content
 #backup
 ## backup
-backup_des: Backup data files to local and log channel, support database backup, safe and reliable.
+backup_scheduler: periodic backup task
+backup_des: Backup data files to local and log channel and specified chatId, support database backup, safe and reliable.
 backup_process: Processing backup... It may take some time to complete.
 backup_success_channel: Backup complete! Zipped backup has been sent to log channel.
 backup_uploading: Backup file uploading...
 backup_success: Backup complete!
+backup_chatid_suc: Succeeded in setting the backup chatId!
+backup_chatid_error: Failed to set the backup chatId. Please enter the correct chatId!
 ## recovery
 recovery_des: Restore data from local backup or replied backup file, and support full database recovery easily and quickly.
 recovery_file_error: Unknown backup file. It may not be the type of file backed up by PagerMaid.

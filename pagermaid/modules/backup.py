@@ -2,6 +2,7 @@
 import json
 import os
 import tarfile
+from asyncio import sleep
 from datetime import datetime
 from distutils.util import strtobool
 from io import BytesIO
@@ -14,6 +15,15 @@ from pagermaid.listener import listener
 from pagermaid.utils import alias_command, upload_attachment, lang
 
 pgm_backup_zip_name = "pagermaid_backup.tar.gz"
+pgm_backup_redis_key = "pgmBackup"
+pgm_backup_state_redis_key = f'{pgm_backup_redis_key}:state'
+pgm_backup_chatid_redis_key = f'{pgm_backup_redis_key}:chatId'
+is_enable_pgm_backup_job = False
+pgm_backup_chatid = int(config['log_chatid'])
+if redis_status():
+    is_enable_pgm_backup_job = True if redis.get(pgm_backup_state_redis_key) else False
+    pgm_backup_chatid_redis = redis.get(pgm_backup_chatid_redis_key)
+    pgm_backup_chatid = int(pgm_backup_chatid_redis.decode()) if pgm_backup_chatid_redis else pgm_backup_chatid
 
 
 def make_tar_gz(output_filename, source_dirs: list, exclude_filetypes: list):
@@ -48,15 +58,39 @@ def un_tar_gz(filename, dirs):
 
 @scheduler.scheduled_job("cron", day="*/7", hour="0", minute="0", second="20", id="backup_job")
 async def run_every_7_day():
-    await do_backup()
+    if is_enable_pgm_backup_job:
+        await do_backup()
 
 
 @listener(is_plugin=True, outgoing=True, command=alias_command("backup"),
-          description=lang('back_des'))
+          description=lang('backup_des'), parameters="[enable/disable/chatId]")
 async def backup(context):
-    await context.edit(lang('backup_process'))
-    await do_backup(context)
-    await context.edit(lang("backup_success"))
+    global is_enable_pgm_backup_job, pgm_backup_chatid
+    p = context.parameter
+    if len(p) > 0:
+        if p[0] == "enable":
+            is_enable_pgm_backup_job = True
+            redis.set(pgm_backup_state_redis_key, "true")
+            await context.edit(f'{lang("apt_enable")}{lang("backup_scheduler")}')
+        elif p[0] == "disable":
+            is_enable_pgm_backup_job = False
+            redis.delete(pgm_backup_state_redis_key)
+            await context.edit(f'{lang("apt_disable")}{lang("backup_scheduler")}')
+        else:
+            try:
+                pgm_backup_chatid = int(p[0])
+            except ValueError:
+                await context.edit(lang("backup_chatid_error"))
+                return
+            redis.set(pgm_backup_chatid_redis_key, pgm_backup_chatid)
+            await context.edit(lang("backup_chatid_suc"))
+        await sleep(2)
+        await context.delete()
+        return
+    else:
+        await context.edit(lang('backup_process'))
+        await do_backup(context)
+        await context.edit(lang("backup_success"))
 
 
 async def do_backup(context=None):
@@ -85,7 +119,7 @@ async def do_backup(context=None):
         make_tar_gz(file_path, backup_files, exclude_filetypes)
         if context:
             await context.edit(lang("backup_uploading"))
-        await upload_attachment(file_path, int(config['log_chatid']), None, caption=file_path)
+        await upload_attachment(file_path, pgm_backup_chatid, None, caption=file_path)
         os.remove(file_path)
         if context:
             await context.edit(lang("backup_success_channel"))
