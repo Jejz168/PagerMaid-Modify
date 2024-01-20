@@ -131,6 +131,7 @@ parseqr_log: Parsed QR Code with content
 backup_des: Backup data files to local and log channel, support database backup, safe and reliable.
 backup_process: Processing backup... It may take some time to complete.
 backup_success_channel: Backup complete! Zipped backup has been sent to log channel.
+backup_uploading: Backup file uploading...
 backup_success: Backup complete!
 ## recovery
 recovery_des: Restore data from local backup or replied backup file, and support full database recovery easily and quickly.

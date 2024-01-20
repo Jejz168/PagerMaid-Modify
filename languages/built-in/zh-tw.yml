@@ -131,6 +131,7 @@ parseqr_log: 該 QR Code 的內容如下：
 backup_des: 將資料備份到本地以及日誌頻道，支援資料庫備份，安全可靠。
 backup_process: 備份中，請耐心等待直至完成...
 backup_success_channel: 資料備份完成，已傳送到日誌頻道！
+backup_uploading: 正在上傳備份文件...
 backup_success: 資料備份完成！
 ## recovery
 recovery_des: 從本地備份或者回復的備份文件中恢復資料，支持資料庫的全部恢復，方便快速。

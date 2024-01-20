@@ -2,29 +2,32 @@
 import json
 import os
 import tarfile
+from datetime import datetime
 from distutils.util import strtobool
 from io import BytesIO
 from traceback import format_exc
 
 from telethon.tl.types import MessageMediaDocument
 
-from pagermaid import config, redis_status, redis
+from pagermaid import config, redis_status, redis, scheduler
 from pagermaid.listener import listener
 from pagermaid.utils import alias_command, upload_attachment, lang
 
 pgm_backup_zip_name = "pagermaid_backup.tar.gz"
 
 
-def make_tar_gz(output_filename, source_dirs: list):
+def make_tar_gz(output_filename, source_dirs: list, exclude_filetypes: list):
     """
     压缩 tar.gz 文件
     :param output_filename: 压缩文件名
     :param source_dirs: 需要压缩的文件列表
+    :param exclude_filetypes: 排除的文件类型
     :return: None
     """
     with tarfile.open(output_filename, "w:gz") as tar:
         for i in source_dirs:
-            tar.add(i, arcname=os.path.basename(i))
+            tar.add(i, arcname=os.path.basename(i),
+                    filter=lambda tarinfo: None if os.path.splitext(tarinfo.name)[1] in exclude_filetypes else tarinfo)
 
 
 def un_tar_gz(filename, dirs):
@@ -43,19 +46,23 @@ def un_tar_gz(filename, dirs):
         return False
 
 
+@scheduler.scheduled_job("cron", day="*/7", hour="0", minute="0", second="20", id="backup_job")
+async def run_every_7_day():
+    await do_backup()
+
+
 @listener(is_plugin=True, outgoing=True, command=alias_command("backup"),
           description=lang('back_des'))
 async def backup(context):
     await context.edit(lang('backup_process'))
+    await do_backup(context)
+    await context.edit(lang("backup_success"))
 
+
+async def do_backup(context=None):
     # Remove old backup
     if os.path.exists(pgm_backup_zip_name):
         os.remove(pgm_backup_zip_name)
-
-    # remove mp3 , they are so big !
-    for i in os.listdir("data"):
-        if i.find(".mp3") != -1 or i.find(".jpg") != -1 or i.find(".flac") != -1 or i.find(".ogg") != -1:
-            os.remove(f"data{os.sep}{i}")
 
     # backup redis when available
     redis_data = {}
@@ -70,12 +77,20 @@ async def backup(context):
             json.dump(redis_data, f, indent=4)
 
     # run backup function
-    make_tar_gz(pgm_backup_zip_name, ["data", "plugins", "config.yml"])
+    exclude_filetypes = [".mp3", ".jpg", ".png", ".flac", ".ogg"]
+    backup_files = ["data", "plugins", "config.yml", "docker-compose.yml", "dump.rdb", "redis.conf", "redis.conf.bak"]
     if strtobool(config['log']):
-        await upload_attachment(pgm_backup_zip_name, int(config['log_chatid']), None)
-        await context.edit(lang("backup_success_channel"))
+        now = datetime.now().date()
+        file_path = f'pagermaid_backup_{now}.tar.gz'
+        make_tar_gz(file_path, backup_files, exclude_filetypes)
+        if context:
+            await context.edit(lang("backup_uploading"))
+        await upload_attachment(file_path, int(config['log_chatid']), None, caption=file_path)
+        os.remove(file_path)
+        if context:
+            await context.edit(lang("backup_success_channel"))
     else:
-        await context.edit(lang("backup_success"))
+        make_tar_gz("pagermaid_backup.tar.gz", backup_files, exclude_filetypes)
 
 
 @listener(is_plugin=True, outgoing=True, command=alias_command("recovery"),
