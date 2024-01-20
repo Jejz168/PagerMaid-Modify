@@ -89,7 +89,7 @@ async def backup(context):
                     await context.edit(lang("backup_filetype_input_error"))
                     return
                 pgm_backup_exclude_filetypes.append(filetype)
-                redis.set(pgm_backup_exclude_filetypes_redis, ",".join(pgm_backup_exclude_filetypes))
+                redis.set(pgm_backup_exclude_filetypes_redis_key, ",".join(pgm_backup_exclude_filetypes))
                 await context.edit(lang("backup_filetype_suc"))
             except IndexError:
                 await context.edit(lang("merge_command_error"))
