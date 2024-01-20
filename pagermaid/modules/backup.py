@@ -18,12 +18,18 @@ pgm_backup_zip_name = "pagermaid_backup.tar.gz"
 pgm_backup_redis_key = "pgmBackup"
 pgm_backup_state_redis_key = f'{pgm_backup_redis_key}:state'
 pgm_backup_chatid_redis_key = f'{pgm_backup_redis_key}:chatId'
+pgm_backup_exclude_filetypes_redis_key = f'{pgm_backup_redis_key}:excludeFiletypes'
 is_enable_pgm_backup_job = False
 pgm_backup_chatid = int(config['log_chatid'])
+pgm_backup_exclude_filetypes = []
 if redis_status():
     is_enable_pgm_backup_job = True if redis.get(pgm_backup_state_redis_key) else False
     pgm_backup_chatid_redis = redis.get(pgm_backup_chatid_redis_key)
-    pgm_backup_chatid = int(pgm_backup_chatid_redis.decode()) if pgm_backup_chatid_redis else pgm_backup_chatid
+    if pgm_backup_chatid_redis:
+        pgm_backup_chatid = int(pgm_backup_chatid_redis.decode())
+    pgm_backup_exclude_filetypes_redis = redis.get(pgm_backup_exclude_filetypes_redis_key)
+    if pgm_backup_exclude_filetypes_redis:
+        pgm_backup_exclude_filetypes = pgm_backup_exclude_filetypes_redis.decode().split(",")
 
 
 def make_tar_gz(output_filename, source_dirs: list, exclude_filetypes: list):
@@ -63,7 +69,7 @@ async def run_every_7_day():
 
 
 @listener(is_plugin=True, outgoing=True, command=alias_command("backup"),
-          description=lang('backup_des'), parameters="[enable/disable/chatId]")
+          description=lang('backup_des'), parameters="[enable/disable/chatId/ex <e.g., .ttc>]")
 async def backup(context):
     global is_enable_pgm_backup_job, pgm_backup_chatid
     p = context.parameter
@@ -76,6 +82,17 @@ async def backup(context):
             is_enable_pgm_backup_job = False
             redis.delete(pgm_backup_state_redis_key)
             await context.edit(f'{lang("apt_disable")}{lang("backup_scheduler")}')
+        elif p[0] == "ex":
+            try:
+                filetype = p[1]
+                if filetype[0] != ".":
+                    await context.edit(lang("backup_filetype_input_error"))
+                    return
+                pgm_backup_exclude_filetypes.append(filetype)
+                redis.set(pgm_backup_exclude_filetypes_redis, ",".join(pgm_backup_exclude_filetypes))
+                await context.edit(lang("backup_filetype_suc"))
+            except IndexError:
+                await context.edit(lang("merge_command_error"))
         else:
             try:
                 pgm_backup_chatid = int(p[0])
@@ -111,7 +128,7 @@ async def do_backup(context=None):
             json.dump(redis_data, f, indent=4)
 
     # run backup function
-    exclude_filetypes = [".mp3", ".jpg", ".png", ".flac", ".ogg"]
+    exclude_filetypes = [".mp3", ".jpg", ".png", ".flac", ".ogg"] + pgm_backup_exclude_filetypes
     backup_files = ["data", "plugins", "config.yml", "docker-compose.yml", "dump.rdb", "redis.conf", "redis.conf.bak"]
     if strtobool(config['log']):
         now = datetime.now().date()
