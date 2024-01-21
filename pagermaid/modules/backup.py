@@ -92,11 +92,12 @@ async def backup(context):
                     await context.edit(f'{lang("backup_exclude_filetype_list")}:\n'
                                        f'{", ".join(pgm_backup_exclude_filetypes)}')
                     return
-                if "." not in filetype[0] or filetype[0].index(".") > 1:
+                if "." not in filetype or filetype.index(".") > 1:
                     await context.edit(lang("backup_filetype_input_error"))
                     return
                 if filetype[0] == ".":
-                    pgm_backup_exclude_filetypes.append(filetype)
+                    if filetype not in pgm_backup_exclude_filetypes:
+                        pgm_backup_exclude_filetypes.append(filetype)
                 elif filetype[0] == "-":
                     pgm_backup_exclude_filetypes.remove(filetype[1:])
                 else:
