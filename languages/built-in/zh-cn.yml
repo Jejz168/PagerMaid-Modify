@@ -145,6 +145,7 @@ backup_chatid_suc: 设置备份chatId成功
 backup_chatid_error: 设置备份chatId失败，请输入正确的chatId！
 backup_filetype_input_error: 参数错误，请输入.开头的文件扩展名！
 backup_filetype_suc: 设置备份排除文件扩展名成功！
+backup_exclude_filetype_list: 备份排除文件扩展名
 ## recovery
 recovery_des: 从本地备份或者所回复的备份文件中恢复数据，支持数据库的全量恢复，方便快速。
 recovery_file_error: 未知的文件，可能并不是通过 PagerMaid 所备份的文件类型。

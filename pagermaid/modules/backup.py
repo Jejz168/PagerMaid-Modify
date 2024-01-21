@@ -42,8 +42,11 @@ def make_tar_gz(output_filename, source_dirs: list, exclude_filetypes: list):
     """
     with tarfile.open(output_filename, "w:gz") as tar:
         for i in source_dirs:
-            tar.add(i, arcname=os.path.basename(i),
-                    filter=lambda tarinfo: None if os.path.splitext(tarinfo.name)[1] in exclude_filetypes else tarinfo)
+            try:
+                tar.add(i, arcname=os.path.basename(i),
+                        filter=lambda tarinfo: None if os.path.splitext(tarinfo.name)[1] in exclude_filetypes else tarinfo)
+            except FileNotFoundError:
+                continue
 
 
 def un_tar_gz(filename, dirs):
@@ -69,7 +72,7 @@ async def run_every_7_day():
 
 
 @listener(is_plugin=True, outgoing=True, command=alias_command("backup"),
-          description=lang('backup_des'), parameters="[enable/disable/chatId/ex <e.g., .ttc>]")
+          description=lang('backup_des'), parameters="[ enable | disable | chatId | ex <e.g., [-].ttc> ] | [ ! | ！ ]")
 async def backup(context):
     global is_enable_pgm_backup_job, pgm_backup_chatid
     p = context.parameter
@@ -85,12 +88,24 @@ async def backup(context):
         elif p[0] == "ex":
             try:
                 filetype = p[1]
-                if filetype[0] != ".":
+                if filetype[0] in "!！":
+                    await context.edit(f'{lang("backup_exclude_filetype_list")}:\n'
+                                       f'{", ".join(pgm_backup_exclude_filetypes)}')
+                    return
+                if "." not in filetype[0] or filetype[0].index(".") > 1:
                     await context.edit(lang("backup_filetype_input_error"))
                     return
-                pgm_backup_exclude_filetypes.append(filetype)
+                if filetype[0] == ".":
+                    pgm_backup_exclude_filetypes.append(filetype)
+                elif filetype[0] == "-":
+                    pgm_backup_exclude_filetypes.remove(filetype[1:])
+                else:
+                    await context.edit(lang("merge_command_error"))
+                    return
                 redis.set(pgm_backup_exclude_filetypes_redis_key, ",".join(pgm_backup_exclude_filetypes))
-                await context.edit(lang("backup_filetype_suc"))
+                await context.edit(f'{lang("backup_filetype_suc")}\n'
+                                   f'{lang("backup_exclude_filetype_list")}:\n'
+                                   f'{", ".join(pgm_backup_exclude_filetypes)}')
             except IndexError:
                 await context.edit(lang("merge_command_error"))
         else:
@@ -128,12 +143,11 @@ async def do_backup(context=None):
             json.dump(redis_data, f, indent=4)
 
     # run backup function
-    exclude_filetypes = [".mp3", ".jpg", ".png", ".flac", ".ogg"] + pgm_backup_exclude_filetypes
     backup_files = ["data", "plugins", "config.yml", "docker-compose.yml", "dump.rdb", "redis.conf", "redis.conf.bak"]
     if strtobool(config['log']):
         now = datetime.now().date()
         file_path = f'pagermaid_backup_{now}.tar.gz'
-        make_tar_gz(file_path, backup_files, exclude_filetypes)
+        make_tar_gz(file_path, backup_files, pgm_backup_exclude_filetypes)
         if context:
             await context.edit(lang("backup_uploading"))
         await upload_attachment(file_path, pgm_backup_chatid, None, caption=file_path)
@@ -141,7 +155,7 @@ async def do_backup(context=None):
         if context:
             await context.edit(lang("backup_success_channel"))
     else:
-        make_tar_gz("pagermaid_backup.tar.gz", backup_files, exclude_filetypes)
+        make_tar_gz("pagermaid_backup.tar.gz", backup_files, pgm_backup_exclude_filetypes)
 
 
 @listener(is_plugin=True, outgoing=True, command=alias_command("recovery"),

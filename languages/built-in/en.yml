@@ -138,6 +138,7 @@ backup_chatid_suc: Succeeded in setting the backup chatId!
 backup_chatid_error: Failed to set the backup chatId. Please enter the correct chatId!
 backup_filetype_input_error: Parameter error, please enter a filename extension starting with dot!
 backup_filetype_suc: Setting the backup excluded filename extension succeeded!
+backup_exclude_filetype_list: Backup excluded filename extensions
 ## recovery
 recovery_des: Restore data from local backup or replied backup file, and support full database recovery easily and quickly.
 recovery_file_error: Unknown backup file. It may not be the type of file backed up by PagerMaid.

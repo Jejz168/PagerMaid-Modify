@@ -136,6 +136,9 @@ backup_uploading: 正在上傳備份文件...
 backup_success: 資料備份完成！
 backup_chatid_suc: 設置備份chatId成功
 backup_chatid_error: 設置備份chatId失敗，請輸入正確的chatId！
+backup_filetype_input_error: 參數錯誤，請輸入.開頭的文件擴展名！
+backup_filetype_suc: 設置備份排除文件擴展名成功！
+backup_exclude_filetype_list: 備份排除文件擴展名
 ## recovery
 recovery_des: 從本地備份或者回復的備份文件中恢復資料，支持資料庫的全部恢復，方便快速。
 recovery_file_error: 錯誤的檔案，可能並不是通過 PagerMaid 所備份的。
