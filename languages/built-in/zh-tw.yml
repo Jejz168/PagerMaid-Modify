@@ -129,7 +129,7 @@ parseqr_log: 該 QR Code 的內容如下：
 #backup
 ## backup
 backup_scheduler: 定期備份任務
-backup_des: 將資料備份到本地以及日誌頻道或者指定會話，支援資料庫備份，安全可靠。\n\n説明：\nbackup，手動執行備份\n backup { enable | disable }，開啟/關閉每週定時備份（星期一）\nbackup < chatId >，指定文件上傳的chatId\nbackup ex < [-]filenameExtension >，排除指定文件擴展名，-開頭則是刪除\nbackup < ! | ！ >，顯示當前已排除的文件擴展名
+backup_des: "將資料備份到本地以及日誌頻道或者指定會話，支援資料庫備份，安全可靠。\n\n説明：\nbackup，手動執行備份\n backup { enable | disable }，開啟/關閉每週定時備份（星期一）\nbackup < chatId >，指定文件上傳的chatId\nbackup ex < [-]filenameExtension >，排除指定文件擴展名，-開頭則是刪除\nbackup < ! | ！ >，顯示當前已排除的文件擴展名"
 backup_process: 備份中，請耐心等待直至完成...
 backup_success_channel: 資料備份完成，已傳送到日誌頻道！
 backup_uploading: 正在上傳備份文件...
