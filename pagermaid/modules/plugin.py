@@ -149,11 +149,7 @@ async def plugin(context):
         if len(context.parameter) == 2:
             if exists(f"{plugin_directory}{context.parameter[1]}.py"):
                 remove(f"{plugin_directory}{context.parameter[1]}.py")
-                with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
-                    version_json = json.load(f)
-                version_json[context.parameter[1]] = '0.0'
-                with open(f"{plugin_directory}version.json", 'w') as f:
-                    json.dump(version_json, f)
+                await update_plugin_version(context.parameter[1], plugin_directory)
                 result = await context.edit(
                     f"{lang('apt_remove_success')} {context.parameter[1]}, {lang('apt_reboot')} ")
                 if redis_status():
@@ -162,11 +158,7 @@ async def plugin(context):
                 await context.client.disconnect()
             elif exists(f"{plugin_directory}{context.parameter[1]}.py.disabled"):
                 remove(f"{plugin_directory}{context.parameter[1]}.py.disabled")
-                with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
-                    version_json = json.load(f)
-                version_json[context.parameter[1]] = '0.0'
-                with open(f"{plugin_directory}version.json", 'w') as f:
-                    json.dump(version_json, f)
+                await update_plugin_version(context.parameter[1], plugin_directory)
                 await context.edit(f"{lang('apt_removed_plugins')} {context.parameter[1]}.")
                 await log(f"{lang('apt_removed_plugins')} {context.parameter[1]}.")
             elif "/" in context.parameter[1]:
@@ -379,3 +371,11 @@ async def plugin(context):
             await context.edit('-apt install ' + ' '.join(list_plugin))
     else:
         await context.edit(lang('arg_error'))
+
+
+async def update_plugin_version(plugin_name, plugin_directory):
+    with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
+        version_json = json.load(f)
+    del version_json[plugin_name]
+    with open(f"{plugin_directory}version.json", 'w') as f:
+        json.dump(version_json, f)
