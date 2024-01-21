@@ -129,7 +129,7 @@ parseqr_log: Parsed QR Code with content
 #backup
 ## backup
 backup_scheduler: periodic backup task
-backup_des: "Backup data files to local and log channel and specified chatId, support database backup, safe and reliable.\n\n Description: \nbackup, manually execute backup \nbackup { enable | disable }, enable/disable weekly scheduled backup (Monday) \nbackup < chatId >, Specify the file upload chatId\nbackup ex < [-]filenameExtension >, exclude the specified file extension, start with a \"-\" delete a excluded filename extension \nbackup { ! |!  }, displays the currently excluded file extensions"
+backup_des: "Backup data files to local and log channel and specified chatId, support database backup, safe and reliable.\n\n Description: \nbackup, manually execute backup \nbackup { enable | disable }, enable/disable weekly scheduled backup (Monday) \nbackup < chatId >, Specify the file upload chatId\nbackup ex < [-]filenameExtension >, exclude the specified file extension, start with a \"-\" delete a excluded filename extension \nbackup ex { ! |!  }, displays the currently excluded file extensions"
 backup_process: Processing backup... It may take some time to complete.
 backup_success_channel: Backup complete! Zipped backup has been sent to log channel.
 backup_uploading: Backup file uploading...
