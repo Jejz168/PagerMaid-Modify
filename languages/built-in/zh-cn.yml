@@ -136,7 +136,7 @@ parseqr_log: 已解析一张带有 QR 码的消息，内容：
 # backup
 ## backup
 backup_scheduler: 定期备份任务
-backup_des: 备份数据文件到本地以及日志频道或者指定会话，支持数据库的全量备份，安全可靠。
+backup_des: 备份数据文件到本地以及日志频道或者指定会话，支持数据库的全量备份，安全可靠。\n\n说明：\nbackup，手动执行备份\n backup { enable | disable }，开启/关闭每周定时备份（星期一）\nbackup < chatId >，指定文件上传的chatId\nbackup ex < [-]filenameExtension >，排除指定文件扩展名，-开头则是删除\nbackup { ! | ！ }，显示当前已排除的文件扩展名
 backup_process: 备份中，请耐心等待备份程序完成...
 backup_success_channel: 数据文件备份完成并已打包发送到 Log 频道！
 backup_uploading: 正在上传备份文件...

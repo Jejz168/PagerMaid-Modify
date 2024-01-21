@@ -72,7 +72,7 @@ async def run_every_7_day():
 
 
 @listener(is_plugin=True, outgoing=True, command=alias_command("backup"),
-          description=lang('backup_des'), parameters="[ enable | disable | chatId | ex <e.g., [-].ttc> ] | [ ! | ！ ]")
+          description=lang('backup_des'), parameters="{ enable | disable | chatId | ex <e.g., [-].ttc> | { ! | ！ } }")
 async def backup(context):
     global is_enable_pgm_backup_job, pgm_backup_chatid
     p = context.parameter
