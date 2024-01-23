@@ -70,6 +70,7 @@ def reload_plugin(plugin_name, is_second_time=False):
     except BaseException as exception:
         logs.info(f"{lang('module')} {plugin_name} {lang('error')}: {exception}")
         if is_second_time:
+            plugin_list.remove(plugin_name)
             raise ImportError(f"{plugin_name} {lang('error')}: {exception}")
         finds = re.compile(r'\"(.*?)\"').findall(f'{exception}')
         if finds:
