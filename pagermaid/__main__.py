@@ -4,6 +4,7 @@ from sys import path
 from importlib import import_module
 from telethon.errors.rpcerrorlist import PhoneNumberInvalidError
 from pagermaid import bot, logs, working_dir, user_bot, redis, redis_status
+from pagermaid.reload import reload_plugin
 from pagermaid.utils import lang
 
 
@@ -41,7 +42,7 @@ for module_name in module_list:
 
 for plugin_name in plugin_list:
     try:
-        import_module("plugins." + plugin_name)
+        reload_plugin(plugin_name)
     except BaseException as exception:
         logs.info(f"{lang('module')} {plugin_name} {lang('error')}: {exception}")
         plugin_list.remove(plugin_name)
