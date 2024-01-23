@@ -10,7 +10,6 @@ from telethon.errors import MessageTooLongError, MessageNotModifiedError, Messag
 from telethon.events import StopPropagation
 
 from pagermaid import bot, config, help_messages, logs, user_id, analytics, user_bot
-from pagermaid.reload import preprocessing_register_handler, postprocessing_register_handler
 from pagermaid.utils import attach_report, lang, alias_command, admin_check
 
 try:
@@ -32,7 +31,7 @@ def listener(**args):
     parameters = args.get('parameters', None)
     pattern = args.get('pattern', None)
     diagnostics = args.get('diagnostics', True)
-    ignore_edited = args.get('ignore_edited', True)
+    ignore_edited = args.get('ignore_edited', False)
     is_plugin = args.get('is_plugin', True)
     owners_only = args.get("owners_only", False)
     admins_only = args.get("admins_only", False)
@@ -156,16 +155,8 @@ def listener(**args):
                                         "Error report generated.")
 
         if not ignore_edited:
-            key = f'{command}.editedMsg'
-            preprocessing_register_handler(key)
-            event = events.NewMessage(**args)
-            bot.add_event_handler(handler, event)
-            postprocessing_register_handler(key, handler, event)
-        key = f'{command}.newMsg'
-        preprocessing_register_handler(key)
-        event = events.NewMessage(**args)
-        bot.add_event_handler(handler, event)
-        postprocessing_register_handler(key, handler, event)
+            bot.add_event_handler(handler, events.MessageEdited(**args))
+        bot.add_event_handler(handler, events.NewMessage(**args))
 
         return handler
 
