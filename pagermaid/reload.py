@@ -70,7 +70,7 @@ def reload_plugin(plugin_name, is_second_time=False):
         logs.info(f"{lang('module')} {plugin_name} {lang('error')}: {exception}")
         if is_second_time:
             raise ImportError(f"{plugin_name} {lang('error')}: {exception}")
-        finds = re.compile(r'\"(.*?)\"').findall(f'{exception}')
+        finds = find_command(exception)
         if finds:
             registered_command = finds[0]
             key = f'{registered_command}.editedMsg'
