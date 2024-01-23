@@ -47,8 +47,9 @@ def disable_plugin(plugin_name):
             preprocessing_register_handler(key)
             key = f'{registered_command}.newMsg'
             preprocessing_register_handler(key)
-            if registered_command in help_messages:
-                del help_messages[registered_command]
+            del help_messages[registered_command]
+            if plugin_name in plugin_list:
+                plugin_list.remove(plugin_name)
 
 
 def find_command(exception):
@@ -77,8 +78,7 @@ def reload_plugin(plugin_name, is_second_time=False):
             preprocessing_register_handler(key)
             key = f'{registered_command}.newMsg'
             preprocessing_register_handler(key)
-            if registered_command in help_messages:
-                del help_messages[registered_command]
+            del help_messages[registered_command]
             reload_plugin(plugin_name, True)
         else:
             if plugin_name in plugin_list:
