@@ -45,7 +45,7 @@ def listener(**args):
         back = inspect.getframeinfo(inspect.currentframe().f_back)
         module_name = path.basename(back.filename)[:-3]
         logs.debug(f'module: {module_name}, path: {back.filename}')
-        if module_name.startswith("plugins"):
+        if module_name.find("plugins"):
             save_command(f'plugins.{module_name}', command)
         pattern = fr"^-{command}(?: |$)([\s\S]*)"
         if user_bot:
