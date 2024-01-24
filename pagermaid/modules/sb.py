@@ -1,4 +1,4 @@
-from pagermaid import log, redis, redis_status, user_id as self_user_id
+from pagermaid import log, redis, redis_status, user_id as self_user_id, bot
 from pagermaid.listener import listener
 from pagermaid.utils import lang, alias_command
 from struct import error as StructError
@@ -6,10 +6,16 @@ from telethon.tl.functions.messages import GetCommonChatsRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.functions.channels import DeleteParticipantHistoryRequest, EditBannedRequest
 from telethon.tl.types import MessageEntityMentionName, ChannelParticipantsAdmins, MessageEntityPhone, PeerChannel, \
-    ChatBannedRights, MessageEntityCode
+    ChatBannedRights, MessageEntityCode, Channel
 from telethon.errors.rpcerrorlist import UserAdminInvalidError, ChatAdminRequiredError, FloodWaitError
 from asyncio import sleep
 from random import uniform
+
+
+async def get_peer(object_n):
+    if isinstance(object_n, Channel):
+        return (await bot(GetFullChannelRequest(object_n.id))).full_chat  # noqa
+    return (await bot(GetFullUserRequest(object_n.id))).full_user
 
 
 def mention_user(user):
@@ -66,7 +72,7 @@ async def span_ban(context):
             return await context.edit(lang('sb_channel'))
         elif not user:
             return await context.edit(lang('arg_error'))
-        target_user = await context.client(GetFullUserRequest(user))
+        target_user = await get_peer(user)
     else:
         if len(context.parameter) == 1:
             user = context.parameter[0].strip("`")
@@ -87,7 +93,7 @@ async def span_ban(context):
                 return await context.edit(f"{lang('error_prefix')}{lang('arg_error')}")
         try:
             user_object = await context.client.get_entity(user)
-            target_user = await context.client(GetFullUserRequest(user_object.id))
+            target_user = await get_peer(user_object)
         except (TypeError, ValueError, OverflowError, StructError) as exception:
             if str(exception).startswith("Cannot find any entity corresponding to"):
                 await context.edit(f"{lang('error_prefix')}{lang('profile_e_no')}")
@@ -110,7 +116,7 @@ async def span_ban(context):
             pass
         except ChatAdminRequiredError:
             pass
-    if target_user.user.id == self_user_id:
+    if target_user.id == self_user_id:
         await context.edit(lang('arg_error'))
         return
     result = await context.client(GetCommonChatsRequest(user_id=target_user, max_id=0, limit=100))
@@ -170,15 +176,15 @@ async def span_ban(context):
             except ChatAdminRequiredError:
                 pass
     if count == 0:
-        text = f'{lang("sb_no")} {mention_user(target_user.user)}'
+        text = f'{lang("sb_no")} {mention_user(target_user)}'
     else:
-        text = f'{lang("sb_per")} {count} {lang("sb_in")} {mention_user(target_user.user)}'
+        text = f'{lang("sb_per")} {count} {lang("sb_in")} {mention_user(target_user)}'
     await context.edit(text)
     if len(groups) > 0:
         groups = f'\n{lang("sb_pro")}\n' + "\n".join(groups)
     else:
         groups = ''
-    await log(f'{text}\nuid: `{target_user.user.id}` {groups}')
+    await log(f'{text}\nuid: `{target_user.id}` {groups}')
 
 
 @listener(is_plugin=False, outgoing=True, command=alias_command("sb_set"),
