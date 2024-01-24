@@ -4,7 +4,7 @@ from pagermaid.utils import lang, alias_command
 from struct import error as StructError
 from telethon.tl.functions.messages import GetCommonChatsRequest
 from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.functions.channels import DeleteUserHistoryRequest, EditBannedRequest
+from telethon.tl.functions.channels import DeleteParticipantHistoryRequest, EditBannedRequest
 from telethon.tl.types import MessageEntityMentionName, ChannelParticipantsAdmins, MessageEntityPhone, PeerChannel, \
     ChatBannedRights, MessageEntityCode
 from telethon.errors.rpcerrorlist import UserAdminInvalidError, ChatAdminRequiredError, FloodWaitError
@@ -105,7 +105,7 @@ async def span_ban(context):
     chat = await context.get_chat()
     if len(context.parameter) == 0:
         try:
-            await context.client(DeleteUserHistoryRequest(channel=chat, user_id=target_user))
+            await context.client(DeleteParticipantHistoryRequest(channel=chat, participant=target_user))
         except UserAdminInvalidError:
             pass
         except ChatAdminRequiredError:
@@ -120,7 +120,7 @@ async def span_ban(context):
         try:
             chat = await context.client.get_entity(i.id)
             if len(context.parameter) == 0:
-                await context.client(DeleteUserHistoryRequest(channel=chat, user_id=target_user))
+                await context.client(DeleteParticipantHistoryRequest(channel=chat, participant=target_user))
             await context.client.edit_permissions(i.id, target_user, view_messages=False)
             groups.append(mention_group(i))
             count += 1
@@ -153,7 +153,7 @@ async def span_ban(context):
             try:
                 chat = await context.client.get_entity(int(i))
                 if len(context.parameter) == 0:
-                    await context.client(DeleteUserHistoryRequest(channel=chat, user_id=target_user))
+                    await context.client(DeleteParticipantHistoryRequest(channel=chat, participant=target_user))
                 await context.client.edit_permissions(chat, target_user, view_messages=False)
                 groups.append(mention_group(chat))
                 count += 1
@@ -184,7 +184,7 @@ async def span_ban(context):
 @listener(is_plugin=False, outgoing=True, command=alias_command("sb_set"),
           description=lang('sb_des_auto'),
           parameters="<true|false|status>")
-async def span_ban_Set(context):
+async def span_ban_set(context):
     """ Toggles sb of a group. """
     if not redis_status():
         await context.edit(f"{lang('error_prefix')}{lang('redis_dis')}")
