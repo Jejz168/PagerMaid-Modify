@@ -1,16 +1,17 @@
 """ PagerMaid module to manage plugins. """
 
 import json
-from re import search, I
+from glob import glob
 from os import remove, rename, chdir, path
 from os.path import exists
+from re import search, I
 from shutil import copyfile, move
-from glob import glob
-from pagermaid import log, working_dir, config, redis_status, redis
-from pagermaid.listener import listener
-from pagermaid.utils import upload_attachment, lang, alias_command, client
-from pagermaid.modules import plugin_list as active_plugins, __list_plugins
 
+from pagermaid import log, working_dir, config
+from pagermaid.listener import listener
+from pagermaid.modules import plugin_list as active_plugins, __list_plugins
+from pagermaid.reload import reload_plugin, disable_plugin
+from pagermaid.utils import upload_attachment, lang, alias_command, client
 
 try:
     git_source = config['git_source']
@@ -59,7 +60,7 @@ def update_version(plugin_name, version):
         json.dump(version_json, f)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command('apt'), diagnostics=False,
+@listener(is_plugin=False, outgoing=True, command=alias_command('apt'), diagnostics=True,
           description=lang('apt_des'),
           parameters=lang('apt_parameters'))
 async def plugin(context):
@@ -83,12 +84,12 @@ async def plugin(context):
                     pass
                 return
             move_plugin(file_path)
-            result = await context.edit(
-                f"{lang('apt_plugin')} {path.basename(file_path)[:-3]} {lang('apt_installed')},{lang('apt_reboot')}")
-            if redis_status():
-                redis.set("restart_edit", f"{result.id}|{result.chat_id}")
-            await log(f"{lang('apt_install_success')} {path.basename(file_path)[:-3]}.")
-            await context.client.disconnect()
+            try:
+                reload_plugin(path.basename(file_path)[:-3])
+            except ImportError as e:
+                await context.edit(f'安装错误：\n{e}')
+                return
+            await context.edit(f"{lang('apt_install_success')} {path.basename(file_path)[:-3]}.")
         elif len(context.parameter) >= 2:
             await context.edit(lang('apt_processing'))
             process_list = context.parameter
@@ -123,6 +124,7 @@ async def plugin(context):
                             await download(i)
                             update_version(i, x['version'])
                             success_list.append(i)
+                            reload_plugin(i)
                             temp = False
                             break
                 if temp:
@@ -135,30 +137,21 @@ async def plugin(context):
             if len(noneed_list) > 0:
                 message += lang('apt_no_update') + " %s\n" % ", ".join(noneed_list)
             await log(message)
-            restart = len(success_list) > 0
-            if restart:
-                message += lang('apt_reboot')
-            result = await context.edit(message)
-            if restart:
-                if redis_status():
-                    redis.set("restart_edit", f"{result.id}|{result.chat_id}")
-                await context.client.disconnect()
+            await context.edit(message)
         else:
             await context.edit(lang('arg_error'))
     elif context.parameter[0] == "remove":
         if len(context.parameter) == 2:
             if exists(f"{plugin_directory}{context.parameter[1]}.py"):
+                disable_plugin(context.parameter[1])
                 remove(f"{plugin_directory}{context.parameter[1]}.py")
-                await update_plugin_version(context.parameter[1], plugin_directory)
-                result = await context.edit(
-                    f"{lang('apt_remove_success')} {context.parameter[1]}, {lang('apt_reboot')} ")
-                if redis_status():
-                    redis.set("restart_edit", f"{result.id}|{result.chat_id}")
+                await delete_plugin_version(context.parameter[1], plugin_directory)
+                await context.edit(f"{lang('apt_remove_success')} {context.parameter[1]}")
                 await log(f"{lang('apt_remove')} {context.parameter[1]}.")
-                await context.client.disconnect()
             elif exists(f"{plugin_directory}{context.parameter[1]}.py.disabled"):
+                disable_plugin(context.parameter[1])
                 remove(f"{plugin_directory}{context.parameter[1]}.py.disabled")
-                await update_plugin_version(context.parameter[1], plugin_directory)
+                await delete_plugin_version(context.parameter[1], plugin_directory)
                 await context.edit(f"{lang('apt_removed_plugins')} {context.parameter[1]}.")
                 await log(f"{lang('apt_removed_plugins')} {context.parameter[1]}.")
             elif "/" in context.parameter[1]:
@@ -173,7 +166,10 @@ async def plugin(context):
             disabled_plugins = []
             if not len(inactive_plugins) == 0:
                 for target_plugin in active_plugins:
-                    inactive_plugins.remove(target_plugin)
+                    try:
+                        inactive_plugins.remove(target_plugin)
+                    except ValueError:
+                        pass
             chdir("plugins/")
             for target_plugin in glob(f"*.py.disabled"):
                 disabled_plugins += [f"{target_plugin[:-12]}"]
@@ -205,15 +201,19 @@ async def plugin(context):
             await context.edit(lang('arg_error'))
     elif context.parameter[0] == "enable":
         if len(context.parameter) == 2:
-            if exists(f"{plugin_directory}{context.parameter[1]}.py.disabled"):
-                rename(f"{plugin_directory}{context.parameter[1]}.py.disabled",
-                       f"{plugin_directory}{context.parameter[1]}.py")
-                result = await context.edit(
-                    f"{lang('apt_plugin')} {context.parameter[1]} {lang('apt_enable')},{lang('apt_reboot')}")
-                if redis_status():
-                    redis.set("restart_edit", f"{result.id}|{result.chat_id}")
+            if exists(f"{plugin_directory}{context.parameter[1]}.py.disabled") or exists(f"{plugin_directory}{context.parameter[1]}.py"):
+                try:
+                    rename(f"{plugin_directory}{context.parameter[1]}.py.disabled",
+                           f"{plugin_directory}{context.parameter[1]}.py")
+                except FileNotFoundError:
+                    pass
+                try:
+                    reload_plugin(context.parameter[1])
+                except ImportError as e:
+                    await context.edit(f'{e}')
+                    return
+                await context.edit(f"{lang('apt_plugin')} {context.parameter[1]} {lang('apt_enable')}")
                 await log(f"{lang('apt_enable')} {context.parameter[1]}.")
-                await context.client.disconnect()
             else:
                 await context.edit(lang('apt_not_exist'))
         else:
@@ -221,14 +221,11 @@ async def plugin(context):
     elif context.parameter[0] == "disable":
         if len(context.parameter) == 2:
             if exists(f"{plugin_directory}{context.parameter[1]}.py") is True:
+                disable_plugin(context.parameter[1])
                 rename(f"{plugin_directory}{context.parameter[1]}.py",
                        f"{plugin_directory}{context.parameter[1]}.py.disabled")
-                result = await context.edit(
-                    f"{lang('apt_plugin')} {context.parameter[1]} {lang('apt_disable')},{lang('apt_reboot')}")
-                if redis_status():
-                    redis.set("restart_edit", f"{result.id}|{result.chat_id}")
+                await context.edit(f"{lang('apt_plugin')} {context.parameter[1]} {lang('apt_disable')}")
                 await log(f"{lang('apt_disable')} {context.parameter[1]}.")
-                await context.client.disconnect()
             else:
                 await context.edit(lang('apt_not_exist'))
         else:
@@ -287,12 +284,12 @@ async def plugin(context):
             if len(need_update_list) == 0:
                 await context.edit(lang('apt_loading_from_online_but_nothing_need_to_update'))
             else:
-                print(6)
                 await context.edit(lang('apt_loading_from_online_and_updating'))
                 plugin_directory = f"{working_dir}/plugins/"
                 for i in need_update_list:
                     remove_plugin(i)
                     await download(i)
+                    reload_plugin(i)
                     with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
                         version_json = json.load(f)
                     for m in plugin_online:
@@ -300,10 +297,7 @@ async def plugin(context):
                             version_json[i] = m['version']
                     with open(f"{plugin_directory}version.json", 'w') as f:
                         json.dump(version_json, f)
-                result = await context.edit(lang('apt_reading_list') + need_update)
-                if redis_status():
-                    redis.set("restart_edit", f"{result.id}|{result.chat_id}")
-                await context.client.disconnect()
+                await context.edit(lang('apt_reading_list') + need_update)
     elif context.parameter[0] == "search":
         if len(context.parameter) == 1:
             await context.edit(lang('apt_search_no_name'))
@@ -373,7 +367,7 @@ async def plugin(context):
         await context.edit(lang('arg_error'))
 
 
-async def update_plugin_version(plugin_name, plugin_directory):
+async def delete_plugin_version(plugin_name, plugin_directory):
     with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
         version_json = json.load(f)
     del version_json[plugin_name]
