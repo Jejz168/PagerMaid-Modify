@@ -84,7 +84,11 @@ async def plugin(context):
                     pass
                 return
             move_plugin(file_path)
-            reload_plugin(path.basename(file_path)[:-3])
+            try:
+                reload_plugin(path.basename(file_path)[:-3])
+            except ImportError as e:
+                await context.edit(f'安装错误：\n{e}')
+                return
             await context.edit(f"{lang('apt_install_success')} {path.basename(file_path)[:-3]}.")
         elif len(context.parameter) >= 2:
             await context.edit(lang('apt_processing'))

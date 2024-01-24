@@ -1,7 +1,8 @@
 """ PagerMaid event listener. """
-
+import inspect
 import sys
 from distutils.util import strtobool
+from os import path
 from time import gmtime, strftime, time
 from traceback import format_exc
 
@@ -10,7 +11,7 @@ from telethon.errors import MessageTooLongError, MessageNotModifiedError, Messag
 from telethon.events import StopPropagation
 
 from pagermaid import bot, config, help_messages, logs, user_id, analytics, user_bot
-from pagermaid.reload import preprocessing_register_handler, postprocessing_register_handler
+from pagermaid.reload import preprocessing_register_handler, postprocessing_register_handler, save_command
 from pagermaid.utils import attach_report, lang, alias_command, admin_check
 
 try:
@@ -41,6 +42,11 @@ def listener(**args):
     if command is not None:
         if command in help_messages:
             raise ValueError(f"{lang('error_prefix')} {lang('command')} \"{command}\" {lang('has_reg')}")
+        back = inspect.getframeinfo(inspect.currentframe().f_back)
+        module_name = path.basename(back.filename)[:-3]
+        logs.debug(f'module: {module_name}, path: {back.filename}')
+        if module_name.startswith("plugins"):
+            save_command(f'plugins.{module_name}', command)
         pattern = fr"^-{command}(?: |$)([\s\S]*)"
         if user_bot:
             pattern = fr"^/{command}(@{user_bot})?(?: |$)([\s\S]*)"
@@ -155,13 +161,16 @@ def listener(**args):
                     await attach_report(report, f"exception.{time()}.log", None,
                                         "Error report generated.")
 
+        func_name = function.__name__
+        module_name = function.__module__
+        logs.debug(f'{module_name}.{func_name}')
         if not ignore_edited:
-            key = f'{command}.editedMsg'
+            key = f'{module_name}.{func_name}.{command}.editedMsg'
             preprocessing_register_handler(key)
             event = events.NewMessage(**args)
             bot.add_event_handler(handler, event)
             postprocessing_register_handler(key, handler, event)
-        key = f'{command}.newMsg'
+        key = f'{module_name}.{func_name}.{command}.newMsg'
         preprocessing_register_handler(key)
         event = events.NewMessage(**args)
         bot.add_event_handler(handler, event)
