@@ -103,7 +103,6 @@ def clear_registered_handlers_for_module(module_name):
     logs.debug(f'clear registered handlers for {module_name}')
     if module_name:
         for key in registered_handlers:
-            logs.debug(f'check key: {key}')
             if key.startswith(module_name) and not key.endswith(".event"):
                 logs.debug(f'remove event handler: {key}')
                 event_key = f'{key}.event'
@@ -113,15 +112,13 @@ def clear_registered_handlers_for_module(module_name):
         for command in registered_commands.getdata(module_name, []):
             if command in help_messages:
                 del help_messages[command]
+        registered_commands.remove(module_name)
 
 
 def reload_plugin(plugin_name, is_second_time=False):
-    if is_second_time:
-        module_name = plugin_name
-        plugin_name = module_name[8:]
-    else:
-        module_name = f"plugins.{plugin_name}"
+    module_name = f"plugins.{plugin_name}"
     try:
+        logs.debug(f'plugin: {plugin_name}, module: {module_name}')
         plugin = import_module(module_name)
         if module_name in sys.modules:
             sys.modules.pop(module_name)
