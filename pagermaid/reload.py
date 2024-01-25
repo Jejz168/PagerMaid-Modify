@@ -116,7 +116,11 @@ def clear_registered_handlers_for_module(module_name):
 
 
 def reload_plugin(plugin_name, is_second_time=False):
-    module_name = f"plugins.{plugin_name}"
+    if is_second_time:
+        module_name = plugin_name
+        plugin_name = module_name[8:]
+    else:
+        module_name = f"plugins.{plugin_name}"
     try:
         plugin = import_module(module_name)
         if module_name in sys.modules:
