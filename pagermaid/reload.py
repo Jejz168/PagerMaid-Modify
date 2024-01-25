@@ -76,7 +76,9 @@ def postprocessing_register_handler(key, callback: Callback, event: EventBuilder
 
 
 def is_registered(module_name, command):
-    return command in registered_commands.getdata(module_name, [])
+    registered_cmds = registered_commands.getdata(module_name, [])
+    logs.debug(f'{command} in {module_name}, {registered_cmds}')
+    return command in registered_cmds
 
 
 def save_command(module_name, command):

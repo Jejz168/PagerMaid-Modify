@@ -42,10 +42,12 @@ def listener(**args):
     if command is not None:
         back = inspect.getframeinfo(inspect.currentframe().f_back)
         module_name = f'plugins.{path.basename(back.filename)[:-3]}'
-        if is_registered(module_name, command):
+        registered = is_registered(module_name, command)
+        logs.debug(f'check command is registered: {command}, {registered}')
+        if registered:
             raise ValueError(f"{lang('error_prefix')} {lang('command')} \"{command}\" {lang('has_reg')}")
         logs.debug(f'module: {module_name}, path: {back.filename}')
-        if module_name.find("plugins"):
+        if module_name.find("plugins") > -1:
             save_command(module_name, command)
         pattern = fr"^-{command}(?: |$)([\s\S]*)"
         if user_bot:
