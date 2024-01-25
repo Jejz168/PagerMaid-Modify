@@ -122,8 +122,12 @@ def clear_registered_handlers_for_module(module_name):
 
 def reload_plugin(plugin_name, is_second_time=False):
     module_name = f"plugins.{plugin_name}"
+    logs.debug(f'plugin: {plugin_name}, module: {module_name}')
     try:
-        logs.debug(f'plugin: {plugin_name}, module: {module_name}')
+        sys.modules.pop(module_name)
+    except KeyError:
+        pass
+    try:
         plugin = import_module(module_name)
         if plugin_name in plugin_list and os.path.exists(plugin.__file__):
             reload(plugin)
