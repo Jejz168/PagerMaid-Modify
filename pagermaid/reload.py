@@ -156,10 +156,16 @@ def reload_plugin(plugin_name, times=0):
 def find_plugin_name_by_command(source_command):
     plugin_name = ""
     for key in registered_handlers.keys():
-        command = key.split(".")
+        if key.endswith(".event"):
+            continue
+        info = key.split(".")
+        if info[-3] == source_command:
+            plugin_name = ".".join(info[:2])
+            break
     return plugin_name
 
 
 def reload_plugin_for_alias(source_command):
     plugin_name = find_plugin_name_by_command(source_command)
-    reload_plugin(plugin_name)
+    if plugin_name:
+        reload_plugin(plugin_name)

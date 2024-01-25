@@ -168,12 +168,12 @@ def listener(**args):
         module_name = function.__module__
         logs.debug(f'{module_name}.{func_name}')
         if not ignore_edited:
-            key = f'{module_name}.{func_name}.{alias}.editedMsg'
+            key = f'{module_name}.{func_name}.{command}.{alias}.editedMsg'
             preprocessing_register_handler(key)
             event = events.NewMessage(**args)
             bot.add_event_handler(handler, event)
             postprocessing_register_handler(key, handler, event)
-        key = f'{module_name}.{func_name}.{alias}.newMsg'
+        key = f'{module_name}.{func_name}.{command}.{alias}.newMsg'
         preprocessing_register_handler(key)
         event = events.NewMessage(**args)
         bot.add_event_handler(handler, event)

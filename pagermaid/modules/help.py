@@ -1,10 +1,11 @@
 """ The help module. """
 
-from os import listdir
 from json import dump as json_dump
-from pagermaid import help_messages, alias_dict, redis_status, redis, language
+
+from pagermaid import help_messages, alias_dict, language
+from pagermaid.listener import listener
+from pagermaid.reload import reload_plugin_for_alias
 from pagermaid.utils import lang
-from pagermaid.listener import listener, config
 
 
 @listener(is_plugin=False, outgoing=True, command="help",
@@ -116,12 +117,14 @@ async def alias_commands(context):
         source_command = context.parameter[1]
         try:
             del alias_dict[source_command]
+            try:
+                reload_plugin_for_alias(source_command)
+            except ImportError:
+                await context.edit(lang('alias_no_exist'))
+                return
             with open("data/alias.json", 'w') as f:
                 json_dump(alias_dict, f)
-            result = await context.edit(lang('alias_success'))
-            if redis_status():
-                redis.set("restart_edit", f"{result.id}|{result.chat_id}")
-            await context.client.disconnect()
+            await context.edit(lang('alias_success'))
         except KeyError:
             await context.edit(lang('alias_no_exist'))
             return
@@ -132,9 +135,11 @@ async def alias_commands(context):
             await context.edit(lang('alias_exist'))
             return
         alias_dict[source_command] = to_command
+        try:
+            reload_plugin_for_alias(source_command)
+        except ImportError:
+            await context.edit(lang('alias_no_exist'))
+            return
         with open("data/alias.json", 'w') as f:
             json_dump(alias_dict, f)
-        result = await context.edit(lang('alias_success'))
-        if redis_status():
-            redis.set("restart_edit", f"{result.id}|{result.chat_id}")
-        await context.client.disconnect()
+        await context.edit(lang('alias_success'))
