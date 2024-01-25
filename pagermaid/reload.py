@@ -124,7 +124,10 @@ def clear_registered_handlers_for_module(module_name):
         for command in registered_commands.getdata(module_name, []):
             if command in help_messages:
                 del help_messages[command]
-        registered_commands.remove(module_name)
+        if module_name.startswith("pagermaid."):
+            registered_commands.remove(f'plugins.{module_name.split(".")[2]}')
+        else:
+            registered_commands.remove(module_name)
 
 
 def reload_plugin(plugin_name, times=0):
