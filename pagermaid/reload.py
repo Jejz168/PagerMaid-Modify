@@ -91,8 +91,10 @@ def disable_plugin(plugin_name):
     module_name = f"plugins.{plugin_name}"
     try:
         plugin = import_module(module_name)
-        if plugin_name in plugin_list and os.path.exists(plugin.__file__):
-            reload(plugin)
+        if plugin_name in plugin_list:
+            plugin_list.remove(plugin_name)
+            if os.path.exists(plugin.__file__):
+                reload(plugin)
     except BaseException as exception:
         logs.debug(f"{lang('module')} {plugin_name} {lang('error')}: {exception}")
         finds = find_command(exception)
@@ -122,7 +124,8 @@ def clear_registered_handlers_for_module(module_name):
         registered_commands.remove(module_name)
 
 
-def reload_plugin(plugin_name, is_second_time=False):
+def reload_plugin(plugin_name, times=0):
+    times += 1
     module_name = f"plugins.{plugin_name}"
     logs.debug(f'plugin: {plugin_name}, module: {module_name}')
     try:
@@ -133,17 +136,17 @@ def reload_plugin(plugin_name, is_second_time=False):
         plugin = import_module(module_name)
         if plugin_name in plugin_list and os.path.exists(plugin.__file__):
             reload(plugin)
-        if plugin_name not in plugin_list:
+        if times >= 1 and plugin_name not in plugin_list:
             plugin_list.append(plugin_name)
             plugin_list.sort()
     except BaseException as exception:
         logs.debug(f"{lang('module')} {plugin_name} {lang('error')}: {exception}, "
-                   f"is_second_time: {is_second_time}")
+                   f"times: {times}")
         if module_name in sys.modules:
             sys.modules.pop(module_name)
         clear_registered_handlers_for_module(module_name)
-        if is_second_time:
+        if times >= 3:
             if plugin_name in plugin_list:
                 plugin_list.remove(plugin_name)
             raise ImportError(f"{plugin_name} {lang('error')}: {exception}")
-        reload_plugin(plugin_name, True)
+        reload_plugin(plugin_name, times)
