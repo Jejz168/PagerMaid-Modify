@@ -370,6 +370,9 @@ async def plugin(context):
 async def delete_plugin_version(plugin_name, plugin_directory):
     with open(f"{plugin_directory}version.json", 'r', encoding="utf-8") as f:
         version_json = json.load(f)
-    del version_json[plugin_name]
+    try:
+        del version_json[plugin_name]
+    except KeyError:
+        pass
     with open(f"{plugin_directory}version.json", 'w') as f:
         json.dump(version_json, f)
