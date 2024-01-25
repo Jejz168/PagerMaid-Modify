@@ -129,7 +129,10 @@ def clear_registered_handlers_for_module(module_name):
 
 def reload_plugin(plugin_name, times=0):
     times += 1
-    module_name = f"plugins.{plugin_name}"
+    if plugin_name.startswith("pagermaid."):
+        module_name = plugin_name
+    else:
+        module_name = f"plugins.{plugin_name}"
     logs.debug(f'plugin: {plugin_name}, module: {module_name}')
     try:
         sys.modules.pop(module_name)
@@ -160,7 +163,7 @@ def find_plugin_name_by_command(source_command):
             continue
         info = key.split(".")
         if info[-3] == source_command:
-            plugin_name = info[1]
+            plugin_name = f'pagermaid.modules.{info[2]}' if info[1] == "modules" else info[1]
             break
     return plugin_name
 
@@ -168,5 +171,9 @@ def find_plugin_name_by_command(source_command):
 def reload_plugin_for_alias(source_command):
     plugin_name = find_plugin_name_by_command(source_command)
     if plugin_name:
-        clear_registered_handlers_for_module(f'plugins.{plugin_name}')
-        reload_plugin(plugin_name)
+        if plugin_name.startswith("pagermaid."):
+            clear_registered_handlers_for_module(plugin_name)
+            reload_plugin(plugin_name)
+        else:
+            clear_registered_handlers_for_module(f'plugins.{plugin_name}')
+            reload_plugin(plugin_name)
