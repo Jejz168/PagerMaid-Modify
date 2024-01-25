@@ -41,12 +41,12 @@ def listener(**args):
     support_inline = args.get("support_inline", False)
     if command is not None:
         back = inspect.getframeinfo(inspect.currentframe().f_back)
-        module_name = path.basename(back.filename)[:-3]
+        module_name = f'plugins.{path.basename(back.filename)[:-3]}'
         if is_registered(module_name, command):
             raise ValueError(f"{lang('error_prefix')} {lang('command')} \"{command}\" {lang('has_reg')}")
         logs.debug(f'module: {module_name}, path: {back.filename}')
         if module_name.find("plugins"):
-            save_command(f'plugins.{module_name}', command)
+            save_command(module_name, command)
         pattern = fr"^-{command}(?: |$)([\s\S]*)"
         if user_bot:
             pattern = fr"^/{command}(@{user_bot})?(?: |$)([\s\S]*)"
