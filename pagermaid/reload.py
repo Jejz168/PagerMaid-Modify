@@ -136,9 +136,7 @@ def reload_plugin(plugin_name, times=0):
     except KeyError:
         pass
     try:
-        plugin = import_module(module_name)
-        if plugin_name in plugin_list and os.path.exists(plugin.__file__):
-            reload(plugin)
+        import_module(module_name)
         if times >= 1 and plugin_name not in plugin_list:
             plugin_list.append(plugin_name)
             plugin_list.sort()
