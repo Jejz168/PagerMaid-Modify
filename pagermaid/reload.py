@@ -168,4 +168,5 @@ def find_plugin_name_by_command(source_command):
 def reload_plugin_for_alias(source_command):
     plugin_name = find_plugin_name_by_command(source_command)
     if plugin_name:
+        clear_registered_handlers_for_module(f'plugins.{plugin_name}')
         reload_plugin(plugin_name)
