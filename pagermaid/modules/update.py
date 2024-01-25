@@ -12,7 +12,7 @@ from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
 from pagermaid import log, config, silent, redis_status, redis
 from pagermaid.listener import listener
-from pagermaid.utils import execute, lang, alias_command
+from pagermaid.utils import execute, lang
 
 try:
     git_ssh = config["git_ssh"]
@@ -22,7 +22,7 @@ except KeyError:
     need_update_check = True
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("update"),
+@listener(is_plugin=False, outgoing=True, command="update",
           description=lang('update_des'),
           parameters="<true/debug>")
 async def update(context):

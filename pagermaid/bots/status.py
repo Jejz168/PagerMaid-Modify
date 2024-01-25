@@ -15,7 +15,7 @@ from pathlib import Path
 from pagermaid import log, config, redis_status, start_time
 from pagermaid.utils import execute
 from pagermaid.listener import listener
-from pagermaid.utils import lang, alias_command, get
+from pagermaid.utils import lang, get
 
 DCs = {
     1: "149.154.175.50",
@@ -26,7 +26,7 @@ DCs = {
 }
 
 
-@listener(is_plugin=False, incoming=True, owners_only=True, command=alias_command("sysinfo"),
+@listener(is_plugin=False, incoming=True, owners_only=True, command="sysinfo",
           description=lang('sysinfo_des'))
 async def sysinfo(context):
     """ Retrieve system information via neofetch. """
@@ -35,7 +35,7 @@ async def sysinfo(context):
     await msg.edit(f"`{result}`")
 
 
-@listener(is_plugin=False, incoming=True, owners_only=True, command=alias_command("status"),
+@listener(is_plugin=False, incoming=True, owners_only=True, command="status",
           description=lang('status_des'))
 async def status(context):
     # database
@@ -77,7 +77,7 @@ async def status(context):
     await context.reply(text)
 
 
-@listener(is_plugin=False, incoming=True, owners_only=True, command=alias_command("speedtest"),
+@listener(is_plugin=False, incoming=True, owners_only=True, command="speedtest",
           description=lang('speedtest_des'), parameters="(Server ID)")
 async def speedtest(context):
     """ Tests internet speed using speedtest. """
@@ -210,7 +210,7 @@ async def speedtest(context):
     await msg.delete()
 
 
-@listener(is_plugin=False, incoming=True, owners_only=True, command=alias_command("pingdc"),
+@listener(is_plugin=False, incoming=True, owners_only=True, command="pingdc",
           description=lang('pingdc_des'))
 async def pingdc(context):
     """ Ping your or other data center's IP addresses. """
@@ -227,7 +227,7 @@ async def pingdc(context):
     )
 
 
-@listener(is_plugin=False, incoming=True, command=alias_command("ping"),
+@listener(is_plugin=False, incoming=True, command="ping",
           description=lang('ping_des'))
 async def ping(context):
     """ Calculates latency between PagerMaid and Telegram. """
@@ -238,7 +238,7 @@ async def ping(context):
     await msg.edit(f"Pong!|{duration}")
 
 
-@listener(is_plugin=False, incoming=True, owners_only=True, command=alias_command("topcloud"),
+@listener(is_plugin=False, incoming=True, owners_only=True, command="topcloud",
           description=lang('topcloud_des'))
 async def topcloud(context):
     """ Generates a word cloud of resource-hungry processes. """

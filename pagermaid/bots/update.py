@@ -11,10 +11,10 @@ from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
 from pagermaid import log
 from pagermaid.listener import listener
-from pagermaid.utils import execute, lang, alias_command
+from pagermaid.utils import execute, lang
 
 
-@listener(is_plugin=False, incoming=True, owners_only=True, command=alias_command("update"),
+@listener(is_plugin=False, incoming=True, owners_only=True, command="update",
           description=lang('update_des'),
           parameters="<true/debug>")
 async def update(context):

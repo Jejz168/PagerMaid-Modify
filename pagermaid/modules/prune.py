@@ -4,10 +4,10 @@ from asyncio import sleep
 from telethon.errors.rpcbaseerrors import BadRequestError
 from pagermaid import log
 from pagermaid.listener import listener
-from pagermaid.utils import lang, alias_command
+from pagermaid.utils import lang
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command('prune'),
+@listener(is_plugin=False, outgoing=True, command='prune',
           description=lang('prune_des'))
 async def prune(context):
     """ Purge every single message after the message you replied to. """
@@ -33,7 +33,7 @@ async def prune(context):
     await notification.delete()
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("selfprune"),
+@listener(is_plugin=False, outgoing=True, command="selfprune",
           description=lang('sp_des'),
           parameters=lang('sp_parameters'))
 async def selfprune(context):
@@ -89,7 +89,7 @@ async def selfprune(context):
         pass
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("yourprune"),
+@listener(is_plugin=False, outgoing=True, command="yourprune",
           description=lang('yp_des'),
           parameters=lang('sp_parameters'))
 async def yourprune(context):
@@ -122,7 +122,7 @@ async def yourprune(context):
     await notification.delete()
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("del"),
+@listener(is_plugin=False, outgoing=True, command="del",
           description=lang('del_des'))
 async def delete(context):
     """ Deletes the message you replied to. """

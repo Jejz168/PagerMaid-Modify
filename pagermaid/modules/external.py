@@ -8,10 +8,10 @@ from re import compile as regex_compile
 
 from pagermaid import log, silent
 from pagermaid.listener import listener, config
-from pagermaid.utils import clear_emojis, attach_log, fetch_youtube_audio, lang, alias_command
+from pagermaid.utils import clear_emojis, attach_log, fetch_youtube_audio, lang
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command('translate'),
+@listener(is_plugin=False, outgoing=True, command='translate',
           description=lang('translate_des'),
           parameters=lang('translate_parameters'))
 async def translate(context):
@@ -59,7 +59,7 @@ async def translate(context):
         await log(f"{lang('translate_get')} {lang('translate_to')} {ap_lang}.")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command('tts'),
+@listener(is_plugin=False, outgoing=True, command='tts',
           description=lang('tts_des'),
           parameters="<string>")
 async def tts(context):
@@ -119,7 +119,7 @@ async def tts(context):
         await context.delete()
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command('google'),
+@listener(is_plugin=False, outgoing=True, command='google',
           description=lang('google_des'),
           parameters="<query>")
 async def googletest(context):
@@ -153,7 +153,7 @@ async def googletest(context):
     await log(f"{lang('google_success')} `{query}`")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command('fetchaudio'),
+@listener(is_plugin=False, outgoing=True, command='fetchaudio',
           description=lang('fetchaudio_des'),
           parameters="<url>,<string>")
 async def fetchaudio(context):

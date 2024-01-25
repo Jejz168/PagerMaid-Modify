@@ -19,7 +19,7 @@ from wordcloud import WordCloud
 
 from pagermaid import log, config, redis_status, start_time, silent, bot
 from pagermaid.listener import listener
-from pagermaid.utils import execute, upload_attachment, lang, alias_command
+from pagermaid.utils import execute, upload_attachment, lang
 
 DCs = {
     1: "149.154.175.50",
@@ -30,7 +30,7 @@ DCs = {
 }
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("sysinfo"),
+@listener(is_plugin=False, outgoing=True, command="sysinfo",
           description=lang('sysinfo_des'))
 async def sysinfo(context):
     """ Retrieve system information via neofetch. """
@@ -40,7 +40,7 @@ async def sysinfo(context):
     await context.edit(f"`{result}`")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("fortune"),
+@listener(is_plugin=False, outgoing=True, command="fortune",
           description=lang('fortune_des'))
 async def fortune(context):
     """ Reads a fortune cookie. """
@@ -51,7 +51,7 @@ async def fortune(context):
     await context.edit(result)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("fbcon"),
+@listener(is_plugin=False, outgoing=True, command="fbcon",
           description=lang('fbcon_des'))
 async def tty(context):
     """ Screenshots a TTY and prints it. """
@@ -83,7 +83,7 @@ async def tty(context):
     await log("Screenshot of binded framebuffer console taken.")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("status"),
+@listener(is_plugin=False, outgoing=True, command="status",
           description=lang('status_des'))
 async def status(context):
     # database
@@ -125,7 +125,7 @@ async def status(context):
     await context.edit(text)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("stats"),
+@listener(is_plugin=False, outgoing=True, command="stats",
           description=lang('stats_des'))
 async def stats(context):
     if not silent:
@@ -160,7 +160,7 @@ async def stats(context):
     await context.edit(text)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("speedtest"),
+@listener(is_plugin=False, outgoing=True, command="speedtest",
           description=lang('speedtest_des'), parameters="(Server ID)")
 async def speedtest(context):
     """ Tests internet speed using speedtest. """
@@ -300,7 +300,7 @@ async def speedtest(context):
         await context.edit(des)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("connection"),
+@listener(is_plugin=False, outgoing=True, command="connection",
           description=lang('connection_des'))
 async def connection(context):
     """ Displays connection information between PagerMaid and Telegram. """
@@ -313,7 +313,7 @@ async def connection(context):
     )
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("pingdc"),
+@listener(is_plugin=False, outgoing=True, command="pingdc",
           description=lang('pingdc_des'))
 async def pingdc(context):
     """ Ping your or other data center's IP addresses. """
@@ -330,7 +330,7 @@ async def pingdc(context):
     )
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("ping"), description=lang('ping_des'))
+@listener(is_plugin=False, outgoing=True, command="ping", description=lang('ping_des'))
 async def ping(context):
     """ Calculates latency between PagerMaid and Telegram. """
     start = datetime.now()
@@ -344,7 +344,7 @@ async def ping(context):
     await context.edit(f"Pong!| PING: {ping_duration} | MSG: {msg_duration}")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("topcloud"),
+@listener(is_plugin=False, outgoing=True, command="topcloud",
           description=lang('topcloud_des'))
 async def topcloud(context):
     """ Generates a word cloud of resource-hungry processes. """

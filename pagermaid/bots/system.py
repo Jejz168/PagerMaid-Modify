@@ -6,10 +6,10 @@ from getpass import getuser
 from os import geteuid
 from pagermaid import log, redis_status, redis
 from pagermaid.listener import listener
-from pagermaid.utils import attach_log, execute, lang, alias_command
+from pagermaid.utils import attach_log, execute, lang
 
 
-@listener(is_plugin=False, incoming=True, owners_only=True, command=alias_command("sh"),
+@listener(is_plugin=False, incoming=True, owners_only=True, command="sh",
           description=lang('sh_des'),
           parameters=lang('sh_parameters'))
 async def sh(context):
@@ -117,7 +117,7 @@ async def sh(context):
     await log(f"{lang('eval_success')}: `{cmd}`")
 
 
-@listener(is_plugin=False, incoming=True, owners_only=True, command=alias_command("restart"), diagnostics=False,
+@listener(is_plugin=False, incoming=True, owners_only=True, command="restart", diagnostics=False,
           description=lang('restart_des'))
 async def restart(context):
     """ To re-execute PagerMaid. """

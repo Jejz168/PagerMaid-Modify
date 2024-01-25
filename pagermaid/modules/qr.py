@@ -6,10 +6,10 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 from pagermaid import log, silent
 from pagermaid.listener import listener
-from pagermaid.utils import obtain_message, upload_attachment, lang, alias_command
+from pagermaid.utils import obtain_message, upload_attachment, lang
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("genqr"),
+@listener(is_plugin=False, outgoing=True, command="genqr",
           description=lang('genqr_des'),
           parameters="<string>")
 async def genqr(context):
@@ -33,7 +33,7 @@ async def genqr(context):
     await log(f"`{message}` {lang('genqr_ok')}")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("parseqr"),
+@listener(is_plugin=False, outgoing=True, command="parseqr",
           description=lang('parseqr_des'))
 async def parseqr(context):
     """ Parse attachment of replied message as a QR Code and output results. """

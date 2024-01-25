@@ -3,11 +3,11 @@
 from os import listdir
 from json import dump as json_dump
 from pagermaid import help_messages, alias_dict, redis_status, redis, language
-from pagermaid.utils import lang, alias_command
+from pagermaid.utils import lang
 from pagermaid.listener import listener, config
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("help"),
+@listener(is_plugin=False, outgoing=True, command="help",
           description=lang('help_des'),
           parameters=f"<{lang('command')}>")
 async def help_command(context):
@@ -49,7 +49,7 @@ async def help_command(context):
                                          f"[{lang('help_module')}](https://wiki.xtaolabs.com/)")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("help_raw"),
+@listener(is_plugin=False, outgoing=True, command="help_raw",
           description=lang('help_des'),
           parameters=f"<{lang('command')}>")
 async def help_raw_command(context):
@@ -68,7 +68,7 @@ async def help_raw_command(context):
                                          f"[{lang('help_source')}](https://t.me/PagerMaid_Modify)")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("lang"),
+@listener(is_plugin=False, outgoing=True, command="lang",
           description=lang('lang_des'))
 async def lang_change(context):
     to_lang = context.arguments

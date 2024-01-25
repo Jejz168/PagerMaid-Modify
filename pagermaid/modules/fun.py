@@ -6,10 +6,10 @@ from telethon.errors.rpcerrorlist import MessageNotModifiedError
 from cowpy import cow
 from pagermaid import module_dir, silent
 from pagermaid.listener import listener
-from pagermaid.utils import owoify, execute, random_gen, obtain_message, lang, alias_command
+from pagermaid.utils import owoify, execute, random_gen, obtain_message, lang
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("animate"),
+@listener(is_plugin=False, outgoing=True, command="animate",
           description=lang('animate_des'),
           parameters="<message>")
 async def animate(context):
@@ -33,7 +33,7 @@ async def animate(context):
         count += 1
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("teletype"),
+@listener(is_plugin=False, outgoing=True, command="teletype",
           description=lang('teletype_des'),
           parameters="<message>")
 async def teletype(context):
@@ -60,7 +60,7 @@ async def teletype(context):
         await sleep(interval)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("mock"),
+@listener(is_plugin=False, outgoing=True, command="mock",
           description=lang('mock_des'),
           parameters="<message>")
 async def mock(context):
@@ -86,7 +86,7 @@ async def mock(context):
             pass
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("widen"),
+@listener(is_plugin=False, outgoing=True, command="widen",
           description=lang('widen_des'),
           parameters="<message>")
 async def widen(context):
@@ -112,7 +112,7 @@ async def widen(context):
                 await context.delete()
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("fox"),
+@listener(is_plugin=False, outgoing=True, command="fox",
           description=lang('fox_des'),
           parameters="<message>")
 async def fox(context):
@@ -126,7 +126,7 @@ async def fox(context):
     await edit_reply(result, context)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("owo"),
+@listener(is_plugin=False, outgoing=True, command="owo",
           description=lang('owo_des'),
           parameters="<message>")
 async def owo(context):
@@ -140,7 +140,7 @@ async def owo(context):
     await edit_reply(result, context)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("flip"),
+@listener(is_plugin=False, outgoing=True, command="flip",
           description=lang('flip_des'),
           parameters="<message>")
 async def flip(context):
@@ -155,7 +155,7 @@ async def flip(context):
 
 
 @listener(is_plugin=False, outgoing=True, groups_only=True,
-          command=alias_command("ship"),
+          command="ship",
           description=lang('ship_des'),
           parameters="<username> <username>")
 async def ship(context):
@@ -202,7 +202,7 @@ async def ship(context):
         await context.edit(lang('ship_BaseException'))
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("rng"),
+@listener(is_plugin=False, outgoing=True, command="rng",
           description=lang('rng_des'),
           parameters="<length>")
 async def rng(context):
@@ -219,7 +219,7 @@ async def rng(context):
     await context.edit(lang('arg_error'))
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("aaa"),
+@listener(is_plugin=False, outgoing=True, command="aaa",
           description=lang('aaa_des'),
           parameters="<integer>")
 async def aaa(context):
@@ -236,7 +236,7 @@ async def aaa(context):
     await context.edit(lang('arg_error'))
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("asciiart"),
+@listener(is_plugin=False, outgoing=True, command="asciiart",
           description=lang('asciiart_des'),
           parameters="<string>")
 async def asciiart(context):
@@ -253,7 +253,7 @@ async def asciiart(context):
     await context.edit(f"```\n{result}\n```")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("tuxsay"),
+@listener(is_plugin=False, outgoing=True, command="tuxsay",
           description=lang('tuxsay_des'),
           parameters="<message>")
 async def tuxsay(context):
@@ -267,7 +267,7 @@ async def tuxsay(context):
     await context.edit(f"```\n{result}\n```")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("coin"),
+@listener(is_plugin=False, outgoing=True, command="coin",
           description=lang('coin_des'))
 async def coin(context):
     """ Throws a coin. """

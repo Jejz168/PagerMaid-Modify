@@ -11,7 +11,7 @@ from pagermaid import log, working_dir, config
 from pagermaid.listener import listener
 from pagermaid.modules import plugin_list as active_plugins, __list_plugins
 from pagermaid.reload import reload_plugin, disable_plugin
-from pagermaid.utils import upload_attachment, lang, alias_command, client
+from pagermaid.utils import upload_attachment, lang, client
 
 try:
     git_source = config['git_source']
@@ -60,7 +60,7 @@ def update_version(plugin_name, version):
         json.dump(version_json, f)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command('apt'), diagnostics=True,
+@listener(is_plugin=False, outgoing=True, command='apt', diagnostics=True,
           description=lang('apt_des'),
           parameters=lang('apt_parameters'))
 async def plugin(context):

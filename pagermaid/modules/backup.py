@@ -12,7 +12,7 @@ from telethon.tl.types import MessageMediaDocument
 
 from pagermaid import config, redis_status, redis, scheduler
 from pagermaid.listener import listener
-from pagermaid.utils import alias_command, upload_attachment, lang
+from pagermaid.utils import upload_attachment, lang
 
 pgm_backup_zip_name = "pagermaid_backup.tar.gz"
 pgm_backup_redis_key = "pgmBackup"
@@ -71,7 +71,7 @@ async def run_every_7_day():
         await do_backup()
 
 
-@listener(is_plugin=True, outgoing=True, command=alias_command("backup"),
+@listener(is_plugin=True, outgoing=True, command="backup",
           description=lang('backup_des'), parameters="{ enable | disable | chatId | ex <e.g., [-].ttc> | { ! | ！ } }")
 async def backup(context):
     global is_enable_pgm_backup_job, pgm_backup_chatid
@@ -159,7 +159,7 @@ async def do_backup(context=None):
         make_tar_gz("pagermaid_backup.tar.gz", backup_files, pgm_backup_exclude_filetypes)
 
 
-@listener(is_plugin=True, outgoing=True, command=alias_command("recovery"),
+@listener(is_plugin=True, outgoing=True, command="recovery",
           description=lang('recovery_des'))
 async def recovery(context):
     message = await context.get_reply_message()

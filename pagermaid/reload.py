@@ -39,6 +39,9 @@ class DictWithLock(dict):
                 del self.__dic[key]
             return self.__dic
 
+    def keys(self):
+        return self.__dic.keys()
+
     def __getitem__(self, name):
         return self.getdata(name)
 
@@ -150,3 +153,15 @@ def reload_plugin(plugin_name, times=0):
                 plugin_list.remove(plugin_name)
             raise ImportError(f"{plugin_name} {lang('error')}: {exception}")
         reload_plugin(plugin_name, times)
+
+
+def find_plugin_name_by_command(source_command):
+    plugin_name = ""
+    for key in registered_handlers.keys():
+        command = key.split(".")
+    return plugin_name
+
+
+def reload_plugin_for_alias(source_command):
+    plugin_name = find_plugin_name_by_command(source_command)
+    reload_plugin(plugin_name)

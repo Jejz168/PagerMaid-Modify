@@ -3,7 +3,7 @@ from telethon.tl.types.users import UserFull
 
 from pagermaid import log, redis, redis_status, user_id as self_user_id, bot, logs
 from pagermaid.listener import listener
-from pagermaid.utils import lang, alias_command
+from pagermaid.utils import lang
 from struct import error as StructError
 from telethon.tl.functions.messages import GetCommonChatsRequest
 from telethon.tl.functions.users import GetFullUserRequest
@@ -69,7 +69,7 @@ def mention_group(chat):
 
 
 @listener(is_plugin=False, outgoing=True,
-          command=alias_command("sb"),
+          command="sb",
           description=lang('sb_des'),
           parameters="<reply|id|username> <do_not_del_all>")
 async def span_ban(context):
@@ -216,7 +216,7 @@ async def span_ban(context):
     await log(f'{text}\nuid: `{target_user_temp.id}` {groups}')
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("sb_set"),
+@listener(is_plugin=False, outgoing=True, command="sb_set",
           description=lang('sb_des_auto'),
           parameters="<true|false|status>")
 async def span_ban_set(context):

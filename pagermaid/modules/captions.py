@@ -9,10 +9,10 @@ from telethon.errors import PhotoInvalidDimensionsError
 
 from pagermaid import log, module_dir, silent
 from pagermaid.listener import listener
-from pagermaid.utils import execute, upload_attachment, lang, alias_command
+from pagermaid.utils import execute, upload_attachment, lang
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("convert"),
+@listener(is_plugin=False, outgoing=True, command="convert",
           description=lang('convert_des'))
 async def convert(context):
     """ Converts image to png. """
@@ -51,7 +51,7 @@ async def convert(context):
     remove("result.png")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("caption"),
+@listener(is_plugin=False, outgoing=True, command="caption",
           description=lang('caption_des'),
           parameters="<string>,<string> <image>")
 async def caption(context):
@@ -108,7 +108,7 @@ async def caption(context):
     await log(f"{lang('caption_success1')} `{message}` {lang('caption_success2')}")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command('ocr'),
+@listener(is_plugin=False, outgoing=True, command='ocr',
           description=lang('ocr_des'))
 async def ocr(context):
     """ Extracts texts from images. """
@@ -148,7 +148,7 @@ async def ocr(context):
     remove(target_file_path)
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command('highlight'),
+@listener(is_plugin=False, outgoing=True, command='highlight',
           description=lang('highlight_des'),
           parameters="<string>")
 async def highlight(context):

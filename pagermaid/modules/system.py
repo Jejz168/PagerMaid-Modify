@@ -10,12 +10,12 @@ from asyncio import sleep
 from requests.exceptions import MissingSchema, InvalidURL, ConnectionError
 from pagermaid import log, bot, redis_status, redis, silent
 from pagermaid.listener import listener
-from pagermaid.utils import attach_log, execute, lang, alias_command
+from pagermaid.utils import attach_log, execute, lang
 from telethon.errors.rpcerrorlist import UserAlreadyParticipantError
 from telethon.tl.functions.messages import ImportChatInviteRequest
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("sh"),
+@listener(is_plugin=False, outgoing=True, command="sh",
           description=lang('sh_des'),
           parameters=lang('sh_parameters'))
 async def sh(context):
@@ -127,7 +127,7 @@ async def sh(context):
     await log(f"{lang('eval_success')}: `{cmd}`")
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("restart"), diagnostics=False,
+@listener(is_plugin=False, outgoing=True, command="restart", diagnostics=False,
           description=lang('restart_des'))
 async def restart(context):
     """ To re-execute PagerMaid. """
@@ -143,7 +143,7 @@ async def restart(context):
         await context.client.disconnect()
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("trace"),
+@listener(is_plugin=False, outgoing=True, command="trace",
           description=lang('trace_des'),
           parameters="<url>")
 async def trace(context):
@@ -185,7 +185,7 @@ async def trace(context):
         await context.edit(lang('arg_error'))
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("chat"),
+@listener(is_plugin=False, outgoing=True, command="chat",
           description=lang('chat_des'))
 async def contact_chat(context):
     """ join a chatroom. """

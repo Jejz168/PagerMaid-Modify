@@ -12,11 +12,11 @@ from PIL import Image, ImageOps
 from math import floor
 from pagermaid import bot, redis, redis_status, silent
 from pagermaid.listener import listener
-from pagermaid.utils import lang, alias_command, client
+from pagermaid.utils import lang, client
 from pagermaid import log
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("s"),
+@listener(is_plugin=False, outgoing=True, command="s",
           description=lang('sticker_des'),
           parameters="<emoji>")
 async def sticker(context):
@@ -598,7 +598,7 @@ def isEmoji(content):
         return False
 
 
-@listener(is_plugin=False, outgoing=True, command=alias_command("sticker"),
+@listener(is_plugin=False, outgoing=True, command="sticker",
           description=lang('sticker_search_des'),
           parameters="<query>")
 async def sticker_search(context):
