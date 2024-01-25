@@ -143,5 +143,7 @@ def reload_plugin(plugin_name, is_second_time=False):
             sys.modules.pop(module_name)
         clear_registered_handlers_for_module(module_name)
         if is_second_time:
+            if plugin_name in plugin_list:
+                plugin_list.remove(plugin_name)
             raise ImportError(f"{plugin_name} {lang('error')}: {exception}")
         reload_plugin(plugin_name, True)
