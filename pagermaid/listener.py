@@ -11,7 +11,7 @@ from telethon.errors import MessageTooLongError, MessageNotModifiedError, Messag
 from telethon.events import StopPropagation
 
 from pagermaid import bot, config, help_messages, logs, user_id, analytics, user_bot
-from pagermaid.reload import preprocessing_register_handler, postprocessing_register_handler, save_command
+from pagermaid.reload import preprocessing_register_handler, postprocessing_register_handler, save_command, is_registered
 from pagermaid.utils import attach_report, lang, alias_command, admin_check
 
 try:
@@ -40,10 +40,10 @@ def listener(**args):
     groups_only = args.get("groups_only", False)
     support_inline = args.get("support_inline", False)
     if command is not None:
-        if command in help_messages:
-            raise ValueError(f"{lang('error_prefix')} {lang('command')} \"{command}\" {lang('has_reg')}")
         back = inspect.getframeinfo(inspect.currentframe().f_back)
         module_name = path.basename(back.filename)[:-3]
+        if is_registered(module_name, command):
+            raise ValueError(f"{lang('error_prefix')} {lang('command')} \"{command}\" {lang('has_reg')}")
         logs.debug(f'module: {module_name}, path: {back.filename}')
         if module_name.find("plugins"):
             save_command(f'plugins.{module_name}', command)

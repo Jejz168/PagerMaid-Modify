@@ -35,7 +35,8 @@ class DictWithLock(dict):
 
     def remove(self, key):
         with self.mutex:
-            del self.__dic[key]
+            if key in self.__dic:
+                del self.__dic[key]
             return self.__dic
 
     def __getitem__(self, name):
@@ -74,10 +75,14 @@ def postprocessing_register_handler(key, callback: Callback, event: EventBuilder
     registered_handlers.setdata(f'{key}.event', event)
 
 
-def save_command(key, command):
-    if command not in registered_commands.getdata(key, []):
-        registered_commands.append(key, command)
-    logs.debug(f'registered_commands: {registered_commands.getdata(key)}')
+def is_registered(module_name, command):
+    return command in registered_commands.getdata(module_name, [])
+
+
+def save_command(module_name, command):
+    if command not in registered_commands.getdata(module_name, []):
+        registered_commands.append(module_name, command)
+    logs.debug(f'registered_commands: {registered_commands.getdata(module_name)}')
 
 
 def disable_plugin(plugin_name):
@@ -120,8 +125,6 @@ def reload_plugin(plugin_name, is_second_time=False):
     try:
         logs.debug(f'plugin: {plugin_name}, module: {module_name}')
         plugin = import_module(module_name)
-        if module_name in sys.modules:
-            sys.modules.pop(module_name)
         if plugin_name in plugin_list and os.path.exists(plugin.__file__):
             reload(plugin)
         if plugin_name not in plugin_list:
