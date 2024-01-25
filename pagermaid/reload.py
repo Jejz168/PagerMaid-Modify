@@ -75,7 +75,7 @@ def postprocessing_register_handler(key, callback: Callback, event: EventBuilder
 
 
 def save_command(key, command):
-    if key not in registered_commands.getdata(key, []):
+    if command not in registered_commands.getdata(key, []):
         registered_commands.append(key, command)
     logs.debug(f'registered_commands: {registered_commands.getdata(key)}')
 
