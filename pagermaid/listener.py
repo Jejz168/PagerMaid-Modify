@@ -29,6 +29,7 @@ def noop(*args, **kw):
 def listener(**args):
     """ Register an event listener. """
     command = args.get('command', None)
+    alias = alias_command(command)
     description = args.get('description', None)
     parameters = args.get('parameters', None)
     pattern = args.get('pattern', None)
@@ -39,19 +40,19 @@ def listener(**args):
     admins_only = args.get("admins_only", False)
     groups_only = args.get("groups_only", False)
     support_inline = args.get("support_inline", False)
-    if command is not None:
+    if alias is not None:
         back = inspect.getframeinfo(inspect.currentframe().f_back)
         module_name = f'plugins.{path.basename(back.filename)[:-3]}'
-        registered = is_registered(module_name, command)
-        logs.debug(f'check command is registered: {command}, {registered}')
+        registered = is_registered(module_name, alias)
+        logs.debug(f'check command is registered: {alias}, {registered}')
         if registered:
-            raise ValueError(f"{lang('error_prefix')} {lang('command')} \"{command}\" {lang('has_reg')}")
+            raise ValueError(f"{lang('error_prefix')} {lang('command')} \"{alias}\" {lang('has_reg')}")
         logs.debug(f'module: {module_name}, path: {back.filename}')
         if module_name.find("plugins") > -1:
-            save_command(module_name, command)
-        pattern = fr"^-{command}(?: |$)([\s\S]*)"
+            save_command(module_name, alias)
+        pattern = fr"^-{alias}(?: |$)([\s\S]*)"
         if user_bot:
-            pattern = fr"^/{command}(@{user_bot})?(?: |$)([\s\S]*)"
+            pattern = fr"^/{alias}(@{user_bot})?(?: |$)([\s\S]*)"
     if pattern is not None and not pattern.startswith('(?i)'):
         args['pattern'] = f"(?i){pattern}"
     else:
@@ -167,12 +168,12 @@ def listener(**args):
         module_name = function.__module__
         logs.debug(f'{module_name}.{func_name}')
         if not ignore_edited:
-            key = f'{module_name}.{func_name}.{command}.editedMsg'
+            key = f'{module_name}.{func_name}.{alias}.editedMsg'
             preprocessing_register_handler(key)
             event = events.NewMessage(**args)
             bot.add_event_handler(handler, event)
             postprocessing_register_handler(key, handler, event)
-        key = f'{module_name}.{func_name}.{command}.newMsg'
+        key = f'{module_name}.{func_name}.{alias}.newMsg'
         preprocessing_register_handler(key)
         event = events.NewMessage(**args)
         bot.add_event_handler(handler, event)
@@ -181,14 +182,14 @@ def listener(**args):
         return handler
 
     if not is_plugin and 'disabled_cmd' in config:
-        if config['disabled_cmd'].count(command) != 0:
+        if config['disabled_cmd'].count(alias) != 0:
             return noop
 
-    if description is not None and command is not None:
+    if description is not None and alias is not None:
         if parameters is None:
             parameters = ""
         help_messages.update({
-            f"{command}": f"**{lang('use_method')}:** `-{command} {parameters}`\
+            f"{alias}": f"**{lang('use_method')}:** `-{alias} {parameters}`\
             \n{description}"
         })
 
