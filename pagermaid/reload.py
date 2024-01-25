@@ -160,7 +160,7 @@ def find_plugin_name_by_command(source_command):
             continue
         info = key.split(".")
         if info[-3] == source_command:
-            plugin_name = ".".join(info[:2])
+            plugin_name = info[1]
             break
     return plugin_name
 
