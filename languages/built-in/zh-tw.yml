@@ -256,7 +256,7 @@ lang_all_lang: 所有語言有這些：
 alias_des: 為指令添加別名。
 alias_list: 以下是別名列表：
 alias_no: 您還沒有為任何指令添加別名。
-alias_success: 別名編輯成功，PagerMaid-Modify 正在重新啟動。
+alias_success: 別名編輯成功。
 alias_exist: Error！別名所指向的指令已被佔用。
 alias_no_exist: Error！原始指令沒有別名。
 #message
