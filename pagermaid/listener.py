@@ -11,7 +11,7 @@ from telethon.errors import MessageTooLongError, MessageNotModifiedError, Messag
 from telethon.events import StopPropagation
 
 from pagermaid import bot, config, help_messages, logs, user_id, analytics, user_bot
-from pagermaid.reload import preprocessing_register_handler, postprocessing_register_handler, save_command, is_registered
+from pagermaid.reload import preprocessing_register_handler, postprocessing_register_handler, register_command, is_registered
 from pagermaid.utils import attach_report, lang, alias_command, admin_check
 
 try:
@@ -48,7 +48,7 @@ def listener(**args):
         if registered:
             raise ValueError(f"{lang('error_prefix')} {lang('command')} \"{alias}\" {lang('has_reg')}")
         logs.debug(f'module: {module_name}, path: {back.filename}')
-        save_command(module_name, alias)
+        register_command(module_name, alias)
         pattern = fr"^-{alias}(?: |$)([\s\S]*)"
         if user_bot:
             pattern = fr"^/{alias}(@{user_bot})?(?: |$)([\s\S]*)"

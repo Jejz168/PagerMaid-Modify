@@ -21,6 +21,8 @@ save_id: 設定用戶名成功。
 #modules_init
 modules_init_loading_modules: 載入內建模組
 modules_init_loading_plugins: 載入外掛程式
+#asynctask
+task: 任務
 #listener
 command: 指令
 has_reg: 已被註冊

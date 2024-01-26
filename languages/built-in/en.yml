@@ -21,6 +21,8 @@ save_id: The user ID is get successfully.
 #modules_init
 modules_init_loading_modules: Load built-in modules
 modules_init_loading_plugins: Load plugin
+#asynctask
+task: task
 #listener
 command: command
 has_reg: is already registered.

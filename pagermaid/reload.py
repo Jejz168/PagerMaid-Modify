@@ -27,7 +27,7 @@ class DictWithLock(dict):
             if name in self.__dic and self.__dic[name] is not None:
                 return self.__dic[name]
             else:
-                return default if default is not None else None
+                return default
 
     def append(self, key, value):
         with self.mutex:
@@ -58,6 +58,8 @@ class DictWithLock(dict):
 
 registered_handlers = DictWithLock()
 registered_commands = DictWithLock()
+registered_tasks = DictWithLock()
+registered_task_instance = DictWithLock()
 
 Callback = typing.Callable[[typing.Any], typing.Any]
 
@@ -79,15 +81,32 @@ def postprocessing_register_handler(key, callback: Callback, event: EventBuilder
 
 
 def is_registered(module_name, command):
-    registered_cmds = registered_commands.getdata(module_name, [])
-    logs.debug(f'{command} in {module_name}, {registered_cmds}')
-    return command in registered_cmds
+    registered_command_list = registered_commands.getdata(module_name, [])
+    logs.debug(f'{command} in {module_name}, {registered_command_list}')
+    return command in registered_command_list
 
 
-def save_command(module_name, command):
+def is_registered_task(module_name, task):
+    registered_task_list = registered_tasks.getdata(module_name, [])
+    logs.debug(f'{task} in {module_name}, {registered_task_list}')
+    return task in registered_task_list
+
+
+def register_command(module_name, command):
     if command not in registered_commands.getdata(module_name, []):
         registered_commands.append(module_name, command)
     logs.debug(f'registered_commands: {registered_commands.getdata(module_name)}')
+
+
+def register_task(module_name, task):
+    if task not in registered_tasks.getdata(module_name, []):
+        registered_tasks.append(module_name, task)
+    logs.debug(f'registered_tasks: {registered_tasks.getdata(module_name)}')
+
+
+def save_task_instance(module_name, name, task):
+    if name not in registered_tasks.getdata(module_name, []):
+        registered_task_instance.setdata(f'{module_name}.{name}', task)
 
 
 def disable_plugin(plugin_name):
@@ -111,6 +130,14 @@ def find_command(exception):
     return finds
 
 
+def cancel_registered_task(module_name):
+    for name in registered_tasks.getdata(module_name, []):
+        instance = registered_task_instance.getdata(f'{module_name}.{name}')
+        if instance:
+            instance.cancel()
+    registered_tasks.remove(module_name)
+
+
 def clear_registered_handlers_for_module(module_name):
     logs.debug(f'clear registered handlers for {module_name}')
     if module_name:
@@ -125,9 +152,9 @@ def clear_registered_handlers_for_module(module_name):
             if command in help_messages:
                 del help_messages[command]
         if module_name.startswith("pagermaid."):
-            registered_commands.remove(f'plugins.{module_name.split(".")[2]}')
-        else:
-            registered_commands.remove(module_name)
+            module_name = f'plugins.{module_name.split(".")[2]}'
+        registered_commands.remove(module_name)
+        cancel_registered_task(module_name)
 
 
 def reload_plugin(plugin_name, times=0):

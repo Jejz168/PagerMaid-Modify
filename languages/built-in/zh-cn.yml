@@ -25,6 +25,9 @@ save_id: 设置用户标识成功。
 modules_init_loading_modules: 加载内置模块
 modules_init_loading_plugins: 加载插件
 
+# asynctask
+task: 任务
+
 # listener
 command: 命令
 has_reg: 已经被注册。
