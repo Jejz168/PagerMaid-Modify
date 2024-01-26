@@ -48,8 +48,7 @@ def listener(**args):
         if registered:
             raise ValueError(f"{lang('error_prefix')} {lang('command')} \"{alias}\" {lang('has_reg')}")
         logs.debug(f'module: {module_name}, path: {back.filename}')
-        if module_name.find("plugins") > -1:
-            save_command(module_name, alias)
+        save_command(module_name, alias)
         pattern = fr"^-{alias}(?: |$)([\s\S]*)"
         if user_bot:
             pattern = fr"^/{alias}(@{user_bot})?(?: |$)([\s\S]*)"
