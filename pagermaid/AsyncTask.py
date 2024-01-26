@@ -24,9 +24,7 @@ def AsyncTask(**args):
     register_task(module_name, name)
 
     def decorator(task):
-        async def handler(context):
-            t = bot.loop.create_task(task(context.client))
-            save_task_instance(module_name, name, t)
-            logs.debug(f'created task: {name}')
-        return handler
+        t = bot.loop.create_task(task(bot))
+        save_task_instance(module_name, name, t)
+        logs.debug(f'created task: {module_name}, {name}, {t}')
     return decorator

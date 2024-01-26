@@ -105,8 +105,10 @@ def register_task(module_name, task):
 
 
 def save_task_instance(module_name, name, task):
-    if name not in registered_tasks.getdata(module_name, []):
+    logs.debug(f'ready to save task instance: {module_name}.{name}, {task}')
+    if name in registered_tasks.getdata(module_name, []):
         registered_task_instance.setdata(f'{module_name}.{name}', task)
+        logs.debug(f'saved task instance: {module_name}.{name}, {task}')
 
 
 def disable_plugin(plugin_name):
@@ -135,6 +137,7 @@ def cancel_registered_task(module_name):
         instance = registered_task_instance.getdata(f'{module_name}.{name}')
         if instance:
             instance.cancel()
+            registered_task_instance.remove(f'{module_name}.{name}')
     registered_tasks.remove(module_name)
 
 
