@@ -40,7 +40,7 @@ RUN source ~/.bashrc \
         libzbar0 \
         iputils-ping \
     ## 安装s6
-    && curl -L -o /tmp/s6-overlay-installer https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer \
+    && curl -L -o /tmp/s6-overlay-installer https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64-installer \
     && chmod +x /tmp/s6-overlay-installer \
     && /tmp/s6-overlay-installer / \
     ## 安装编译依赖
