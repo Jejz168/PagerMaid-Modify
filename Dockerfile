@@ -20,7 +20,7 @@ RUN apt-get update && apt-get upgrade -y \
         tesseract-ocr \
         tesseract-ocr-eng \
         tesseract-ocr-chi-sim \
-        language-pack-zh-hans \
+        language-pack-zh \
         sudo \
         git \
         openssl \
