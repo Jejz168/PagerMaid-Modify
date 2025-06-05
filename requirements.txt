@@ -1,5 +1,5 @@
 psutil>=5.8.0
-PyQRCode>=1.2.1
+PyQRCode==1.2.1
 pypng>=0.0.20
 pyzbar>=0.1.8
 emoji==1.7.0
