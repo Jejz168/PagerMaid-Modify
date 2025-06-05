@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 ARG S6_VERSION=v2.2.0.3
-ARG TARGETPLATFORM
+ARG S6_ARCH=amd64
 ARG DEBIAN_FRONTEND=noninteractive
 ARG USER_NAME=pagermaid
 ARG WORK_DIR=/pagermaid/workdir
@@ -11,9 +11,6 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     RUN_AS_ROOT=true
 SHELL ["/bin/bash", "-c"]
 WORKDIR $WORK_DIR
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then export S6_ARCH=amd64; \
-    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then export S6_ARCH=aarch64; fi \
-    && echo "S6_ARCH is $S6_ARCH"
 RUN source ~/.bashrc \
     ## 安装运行环境依赖，自编译建议修改为国内镜像源
 #   && sed -i 's/archive.ubuntu.com/mirrors.bfsu.edu.cn/g' /etc/apt/sources.list \
