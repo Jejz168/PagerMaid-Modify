@@ -19,7 +19,7 @@ jobs:
 
           git clone https://github.com/TeamPGM/PagerMaid-Modify
           cd PagerMaid-Modify
-          git checkout master
+          #git checkout master
           git checkout -b master
       
       - name: Push to your repo
