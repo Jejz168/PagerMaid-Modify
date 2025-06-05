@@ -1,6 +1,5 @@
 FROM ubuntu:latest
 ARG S6_VERSION=v2.2.0.3
-ARG S6_ARCH=amd64
 ARG DEBIAN_FRONTEND=noninteractive
 ARG USER_NAME=pagermaid
 ARG WORK_DIR=/pagermaid/workdir
@@ -11,6 +10,12 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     RUN_AS_ROOT=true
 SHELL ["/bin/bash", "-c"]
 WORKDIR $WORK_DIR
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then \
+        S6_ARCH=amd64; \
+    elif [ "$ARCH" = "aarch64" ]; then \
+        S6_ARCH=arm64; \
+    fi
 RUN source ~/.bashrc \
     ## 安装运行环境依赖，自编译建议修改为国内镜像源
 #   && sed -i 's/archive.ubuntu.com/mirrors.bfsu.edu.cn/g' /etc/apt/sources.list \
@@ -40,7 +45,7 @@ RUN source ~/.bashrc \
         libzbar0 \
         iputils-ping \
     ## 安装s6
-    && curl -L -o /tmp/s6-overlay-installer https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64-installer \
+    && curl -L -o /tmp/s6-overlay-installer https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer \
     && chmod +x /tmp/s6-overlay-installer \
     && /tmp/s6-overlay-installer / \
     ## 安装编译依赖
