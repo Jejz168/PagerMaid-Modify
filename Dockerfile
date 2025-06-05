@@ -1,5 +1,6 @@
-FROM ubuntu:latest
+FROM ubuntu:20.04
 ARG S6_VERSION=v2.2.0.3
+ARG S6_ARCH=amd64
 ARG DEBIAN_FRONTEND=noninteractive
 ARG USER_NAME=pagermaid
 ARG WORK_DIR=/pagermaid/workdir
@@ -10,12 +11,6 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     RUN_AS_ROOT=true
 SHELL ["/bin/bash", "-c"]
 WORKDIR $WORK_DIR
-RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" = "x86_64" ]; then \
-        S6_ARCH=amd64; \
-    elif [ "$ARCH" = "aarch64" ]; then \
-        S6_ARCH=arm64; \
-    fi
 RUN source ~/.bashrc \
     ## 安装运行环境依赖，自编译建议修改为国内镜像源
 #   && sed -i 's/archive.ubuntu.com/mirrors.bfsu.edu.cn/g' /etc/apt/sources.list \
@@ -88,7 +83,7 @@ RUN source ~/.bashrc \
     && usermod -aG sudo,users $USER_NAME \
     && echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER_NAME \
     ## 克隆仓库
-    && git clone -b master https://github.com/Jejz168/PagerMaid-Modify.git $WORK_DIR \
+    && git clone -b master https://gitlab.com/Xtao-Labs/pagermaid-modify.git $WORK_DIR \
     && git config --global pull.ff only \
     ## 复制s6启动脚本
     && cp -r s6/* / \
