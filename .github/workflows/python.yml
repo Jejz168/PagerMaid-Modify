@@ -24,12 +24,12 @@ jobs:
         python-version: ["3.6"]
     steps:
     # 此步骤使用 GitHub 的 https://github.com/actions/checkout
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@main
     
     # 设置python环境
     # 此步骤使用 GitHub 的 https://github.com/actions/setup-python
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@main
       with:
         python-version: ${{ matrix.python-version }}
 
