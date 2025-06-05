@@ -26,7 +26,7 @@ config = None
 help_messages = {}
 scheduler = AsyncIOScheduler()
 if not scheduler.running:
-    scheduler.configure(timezone="Asia/Shanghai")
+    scheduler.configure(timezone="Asia/ShangHai")
     scheduler.start()
 version = 0.1
 logs = getLogger(__name__)
