@@ -1,26 +1,22 @@
-FROM ubuntu:22.04
+FROM python:3.6-slim
+
 ARG S6_VERSION=v2.2.0.3
 ARG S6_ARCH=amd64
 ARG DEBIAN_FRONTEND=noninteractive
 ARG USER_NAME=pagermaid
 ARG WORK_DIR=/pagermaid/workdir
+
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     SHELL=/bin/bash \
     LANG=zh_CN.UTF-8 \
     PS1="\u@\h:\w \$ " \
     RUN_AS_ROOT=true
+
 SHELL ["/bin/bash", "-c"]
 WORKDIR $WORK_DIR
-RUN source ~/.bashrc \
-    ## 安装运行环境依赖，自编译建议修改为国内镜像源
-#   && sed -i 's/archive.ubuntu.com/mirrors.bfsu.edu.cn/g' /etc/apt/sources.list \
-#   && sed -i 's/security.ubuntu.com/mirrors.bfsu.edu.cn/g' /etc/apt/sources.list \
-#   && sed -i 's/ports.ubuntu.com/mirrors.bfsu.edu.cn/g' /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get upgrade -y \
+
+RUN apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
-        python3.6 \
-        python3-pip \
         tesseract-ocr \
         tesseract-ocr-eng \
         tesseract-ocr-chi-sim \
@@ -46,10 +42,9 @@ RUN source ~/.bashrc \
     ## 安装编译依赖
     && apt-get update \
     && apt-get install --no-install-recommends -y \
-        ## 这是跨平台交叉编译要用到的包，如果自行构建，有可能不需要
         build-essential \
         apt-utils \
-        python3.6-dev \
+        python3-dev \
         libxslt1-dev \
         libxml2-dev \
         libssl-dev \
@@ -73,12 +68,6 @@ RUN source ~/.bashrc \
     ## 设置时区
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
-    ## python软链接
-    && ln -sf /usr/bin/python3.6 /usr/bin/python \
-    ## 升级pip
-    && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
-    && python get-pip.py \
-    && rm get-pip.py \
     ## 添加用户
     && useradd $USER_NAME -u 917 -U -r -m -d /$USER_NAME -s /bin/bash \
     && usermod -aG sudo,users $USER_NAME \
@@ -89,12 +78,13 @@ RUN source ~/.bashrc \
     ## 复制s6启动脚本
     && cp -r s6/* / \
     ## pip install
+    && pip install --upgrade pip \
     && pip install -r requirements.txt \
     ## 卸载编译依赖，清理安装缓存
-    && sudo apt-get purge --auto-remove -y \
+    && apt-get purge --auto-remove -y \
         build-essential \
         apt-utils \
-        python3.6-dev \
+        python3-dev \
         libxslt1-dev \
         libxml2-dev \
         libssl-dev \
@@ -116,10 +106,6 @@ RUN source ~/.bashrc \
         libxcb1-dev \
         pkg-config \
     && apt-get clean -y \
-    && rm -rf \
-        ## 删除apt和pip的安装缓存
-        /tmp/* \
-        /var/lib/apt/lists/* \
-        /var/tmp/* \
-        ~/.cache
+    && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/* ~/.cache
+
 ENTRYPOINT ["/init"]
