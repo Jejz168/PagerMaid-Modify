@@ -43,33 +43,6 @@ RUN source ~/.bashrc \
     && curl -L -o /tmp/s6-overlay-installer https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer \
     && chmod +x /tmp/s6-overlay-installer \
     && /tmp/s6-overlay-installer / \
-    ## 安装编译依赖
-    && apt-get update \
-    && apt-get install --no-install-recommends -y \
-        ## 这是跨平台交叉编译要用到的包，如果自行构建，有可能不需要
-        build-essential \
-        apt-utils \
-        python3-dev \
-        libxslt1-dev \
-        libxml2-dev \
-        libssl-dev \
-        libffi-dev \
-        zlib1g-dev \
-        tcl8.6-dev \
-        tk8.6-dev \
-        libimagequant-dev \
-        libraqm-dev \
-        libjpeg-dev \
-        libtiff5-dev \
-        libopenjp2-7-dev \
-        libfreetype6-dev \
-        liblcms2-dev \
-        libwebp-dev \
-        python3-tk \
-        libharfbuzz-dev \
-        libfribidi-dev \
-        libxcb1-dev \
-        pkg-config \
     ## 设置时区
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
@@ -83,7 +56,7 @@ RUN source ~/.bashrc \
     && usermod -aG sudo,users $USER_NAME \
     && echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER_NAME \
     ## 克隆仓库
-    && git clone -b master https://gitlab.com/Xtao-Labs/pagermaid-modify.git $WORK_DIR \
+    && git clone -b master https://github.com/Jejz168/PagerMaid-Modify.git $WORK_DIR \
     && git config --global pull.ff only \
     ## 复制s6启动脚本
     && cp -r s6/* / \
