@@ -73,7 +73,6 @@ RUN source ~/.bashrc \
         zlib1g-dev \
         tcl8.6-dev \
         tk8.6-dev \
-        libimagequant-dev \
         libraqm-dev \
         libjpeg-dev \
         libtiff5-dev \
