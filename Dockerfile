@@ -49,8 +49,7 @@ RUN source ~/.bashrc \
     ## python软链接
     && ln -sf /usr/bin/python3 /usr/bin/python \
     ## 升级pip
-#   && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
-    && python -m pip install --upgrade pip \
+    && python -m pip install --upgrade pip setuptools wheel \
     ## 添加用户
     && useradd $USER_NAME -u 917 -U -r -m -d /$USER_NAME -s /bin/bash \
     && usermod -aG sudo,users $USER_NAME \
