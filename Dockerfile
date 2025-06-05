@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 ARG S6_VERSION=v2.2.0.3
 ARG S6_ARCH=amd64
 ARG DEBIAN_FRONTEND=noninteractive
@@ -19,8 +19,6 @@ RUN source ~/.bashrc \
     && apt-get update \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
-        python3 \
-        python3-pip \
         tesseract-ocr \
         tesseract-ocr-eng \
         tesseract-ocr-chi-sim \
@@ -49,7 +47,6 @@ RUN source ~/.bashrc \
         ## 这是跨平台交叉编译要用到的包，如果自行构建，有可能不需要
         build-essential \
         apt-utils \
-        python3-dev \
         libxslt1-dev \
         libxml2-dev \
         libssl-dev \
@@ -73,11 +70,20 @@ RUN source ~/.bashrc \
     ## 设置时区
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
-    ## python软链接
-    && ln -sf /usr/bin/python3 /usr/bin/python \
+    ## 下载 python3.6
+    && wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz \
+    && tar xzf Python-3.6.15.tgz \
+    && cd Python-3.6.15 \
+    && ./configure --enable-optimizations \
+    && make -j$(nproc) \
+    && make altinstall \
+    && cd .. \
+    && rm -rf Python-3.6.15 Python-3.6.15.tgz \
+    ## 设置 python3.6 为默认 python
+    && ln -sf /usr/local/bin/python3.6 /usr/bin/python3 \
+    && ln -sf /usr/local/bin/python3.6 /usr/bin/python \
     ## 升级pip
-#   && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
-    && python -m pip install --upgrade pip \
+    && python3 -m pip install --upgrade pip \
     ## 添加用户
     && useradd $USER_NAME -u 917 -U -r -m -d /$USER_NAME -s /bin/bash \
     && usermod -aG sudo,users $USER_NAME \
