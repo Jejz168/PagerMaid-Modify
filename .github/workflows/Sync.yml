@@ -19,11 +19,11 @@ jobs:
 
           git clone https://github.com/TeamPGM/PagerMaid-Modify
           cd PagerMaid-Modify
-          #git checkout master
-          git checkout -b master
+          git checkout master
+          git checkout -b PagerMaid
       
       - name: Push to your repo
         run: |
           cd PagerMaid-Modify
           git remote add target https://x-access-token:${{ secrets.API_TOKEN }}@github.com/${{ github.repository }}.git
-          git push target master --force
+          git push target PagerMaid --force
