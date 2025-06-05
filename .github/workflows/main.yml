@@ -1,8 +1,7 @@
 name: "构建PagerMaid"
 
 on:
-  push:
-    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
