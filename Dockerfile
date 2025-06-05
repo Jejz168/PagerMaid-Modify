@@ -1,26 +1,45 @@
-FROM python:3.6-slim
-
+FROM ubuntu:22.04
 ARG S6_VERSION=v2.2.0.3
 ARG S6_ARCH=amd64
 ARG DEBIAN_FRONTEND=noninteractive
 ARG USER_NAME=pagermaid
 ARG WORK_DIR=/pagermaid/workdir
-
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     SHELL=/bin/bash \
     LANG=zh_CN.UTF-8 \
     PS1="\u@\h:\w \$ " \
     RUN_AS_ROOT=true
-
 SHELL ["/bin/bash", "-c"]
 WORKDIR $WORK_DIR
 
-RUN apt-get update && apt-get upgrade -y \
+# ===== 1. 源码编译安装 Python3.6 =====
+RUN apt-get update && apt-get install -y \
+    wget build-essential \
+    libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
+    libsqlite3-dev libffi-dev libncurses5-dev libncursesw5-dev \
+    liblzma-dev tk-dev
+
+RUN wget https://www.python.org/ftp/python/3.6.15/Python-3.6.15.tgz \
+    && tar -xf Python-3.6.15.tgz \
+    && cd Python-3.6.15 \
+    && ./configure --enable-optimizations \
+    && make -j$(nproc) \
+    && make altinstall \
+    && cd .. && rm -rf Python-3.6.15*
+
+# 建议只链接 python3.6/pip3.6，避免覆盖系统python3
+RUN ln -sf /usr/local/bin/python3.6 /usr/bin/python3.6 \
+    && ln -sf /usr/local/bin/pip3.6 /usr/bin/pip3.6
+
+# ===== 2. 你的原有依赖安装和环境配置 =====
+RUN source ~/.bashrc \
+    && apt-get update \
+    && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
         tesseract-ocr \
         tesseract-ocr-eng \
         tesseract-ocr-chi-sim \
-        language-pack-zh \
+        language-pack-zh-hans \
         sudo \
         git \
         openssl \
@@ -44,7 +63,6 @@ RUN apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
         build-essential \
         apt-utils \
-        python3-dev \
         libxslt1-dev \
         libxml2-dev \
         libssl-dev \
@@ -65,7 +83,6 @@ RUN apt-get update && apt-get upgrade -y \
         libfribidi-dev \
         libxcb1-dev \
         pkg-config \
-    ## 设置时区
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
     ## 添加用户
@@ -73,18 +90,19 @@ RUN apt-get update && apt-get upgrade -y \
     && usermod -aG sudo,users $USER_NAME \
     && echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER_NAME \
     ## 克隆仓库
-    && git clone -b master https://github.com/Jejz168/PagerMaid-Modify.git $WORK_DIR \
+    && git clone -b master https://gitlab.com/Xtao-Labs/pagermaid-modify.git $WORK_DIR \
     && git config --global pull.ff only \
     ## 复制s6启动脚本
-    && cp -r s6/* / \
-    ## pip install
-    && pip install --upgrade pip \
-    && pip install -r requirements.txt \
-    ## 卸载编译依赖，清理安装缓存
-    && apt-get purge --auto-remove -y \
+    && cp -r s6/* /
+
+# ===== 3. pip 安装依赖，务必用python3.6 =====
+RUN python3.6 -m pip install --upgrade pip \
+    && python3.6 -m pip install -r requirements.txt
+
+# ===== 4. 清理依赖和缓存 =====
+RUN apt-get purge --auto-remove -y \
         build-essential \
         apt-utils \
-        python3-dev \
         libxslt1-dev \
         libxml2-dev \
         libssl-dev \
