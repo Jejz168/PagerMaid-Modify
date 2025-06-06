@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 ARG S6_VERSION=v2.2.0.3
-ARG S6_ARCH=amd64
+ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 ARG USER_NAME=pagermaid
 ARG WORK_DIR=/pagermaid/workdir
@@ -41,6 +41,11 @@ RUN source ~/.bashrc \
         iputils-ping \
         tzdata \
     ## 安装s6
+    && if [ "$TARGETPLATFORM" = "linux/arm64" ] || [ "$TARGETPLATFORM" = "linux/arm64/v8" ]; then \
+         S6_ARCH=aarch64; \
+       else \
+         S6_ARCH=amd64; \
+       fi \
     && curl -L -o /tmp/s6-overlay-installer https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer \
     && chmod +x /tmp/s6-overlay-installer \
     && /tmp/s6-overlay-installer / \
