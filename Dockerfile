@@ -39,7 +39,6 @@ RUN source ~/.bashrc \
         libmagic1 \
         libzbar0 \
         iputils-ping \
-        tzdata \
     ## 安装s6
     && if [ "$TARGETPLATFORM" = "linux/arm64" ] || [ "$TARGETPLATFORM" = "linux/arm64/v8" ]; then \
          S6_ARCH=aarch64; \
