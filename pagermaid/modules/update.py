@@ -18,7 +18,7 @@ try:
     git_ssh = config["git_ssh"]
     need_update_check = strtobool(config['update_check'])
 except KeyError:
-    git_ssh = "https://github.com/lowking/PagerMaid-Modify.git"
+    git_ssh = "https://github.com/Jejz168/PagerMaid-Modify.git"
     need_update_check = True
 
 
