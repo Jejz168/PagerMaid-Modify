@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 ARG S6_VERSION=v2.2.0.3
 ARG S6_ARCH=amd64
 ARG DEBIAN_FRONTEND=noninteractive
@@ -58,6 +58,7 @@ RUN source ~/.bashrc \
         zlib1g-dev \
         tcl8.6-dev \
         tk8.6-dev \
+        libimagequant-dev \
         libraqm-dev \
         libjpeg-dev \
         libtiff5-dev \
@@ -101,6 +102,7 @@ RUN source ~/.bashrc \
         zlib1g-dev \
         tcl8.6-dev \
         tk8.6-dev \
+        libimagequant-dev \
         libraqm-dev \
         libjpeg-dev \
         libtiff5-dev \
