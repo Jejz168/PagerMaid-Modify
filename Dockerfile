@@ -46,6 +46,7 @@ RUN source ~/.bashrc \
     && /tmp/s6-overlay-installer / \
     ## 安装编译依赖
     && apt-get update \
+    && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
         ## 这是跨平台交叉编译要用到的包，如果自行构建，有可能不需要
         build-essential \
