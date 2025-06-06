@@ -1,6 +1,6 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 ARG S6_VERSION=v2.2.0.3
-ARG S6_ARCH=amd64
+ARG TARGETPLATFORM
 ARG DEBIAN_FRONTEND=noninteractive
 ARG USER_NAME=pagermaid
 ARG WORK_DIR=/pagermaid/workdir
@@ -40,6 +40,11 @@ RUN source ~/.bashrc \
         libzbar0 \
         iputils-ping \
     ## 安装s6
+    && if [ "$TARGETPLATFORM" = "linux/arm64" ] || [ "$TARGETPLATFORM" = "linux/arm64/v8" ]; then \
+         S6_ARCH=aarch64; \
+       else \
+         S6_ARCH=amd64; \
+       fi \
     && curl -L -o /tmp/s6-overlay-installer https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer \
     && chmod +x /tmp/s6-overlay-installer \
     && /tmp/s6-overlay-installer / \
@@ -76,15 +81,15 @@ RUN source ~/.bashrc \
     ## python软链接
     && ln -sf /usr/bin/python3 /usr/bin/python \
     ## 升级pip
-#   && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
-    && python -m pip install --upgrade pip \
+    && python -m pip install --upgrade pip setuptools wheel \
     ## 添加用户
     && useradd $USER_NAME -u 917 -U -r -m -d /$USER_NAME -s /bin/bash \
     && usermod -aG sudo,users $USER_NAME \
     && echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USER_NAME \
     ## 克隆仓库
-    && git clone -b master https://github.com/lowking/PagerMaid-Modify.git $WORK_DIR \
+    && git clone -b PagerMaid https://github.com/Jejz168/PagerMaid-Modify.git $WORK_DIR \
     && git config --global pull.ff only \
+    && git config --global --add safe.directory $WORK_DIR \
     ## 复制s6启动脚本
     && cp -r s6/* / \
     ## pip install
