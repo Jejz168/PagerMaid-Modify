@@ -36,18 +36,6 @@ jobs:
         run: |
           declare -a IMAGES
 
-          echo "Build amd64"
-          docker buildx build \
-            --cache-from "type=local,src=/tmp/.buildx-cache" \
-            --cache-to "type=local,dest=/tmp/.buildx-cache" \
-            --output "type=image,push=true" \
-            --platform linux/amd64 \
-            --build-arg "S6_ARCH=amd64" \
-            --tag "${DOCKERHUB_REPOSITORY}:latest-amd64" \
-            -f Dockerfile \
-            .
-          IMAGES+=( "${DOCKERHUB_REPOSITORY}:latest-amd64" )
-          
           echo "Build arm64-v8"
           docker buildx build \
             --cache-from "type=local,src=/tmp/.buildx-cache" \
